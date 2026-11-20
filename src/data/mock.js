@@ -1,6 +1,5 @@
 export const CONTEXTS = [
   { id: 'poe1', short: 'PoE 1', priceLabel: 'PoE 1, Standard', factor: 0.86, target: 168 },
-  { id: 'poe2', short: 'PoE 2', priceLabel: 'PoE 2, EA', factor: 1.28, target: 240 },
   { id: 'covens', short: 'Covens PC', priceLabel: 'Covens, PC', factor: 1, target: 196 },
 ]
 

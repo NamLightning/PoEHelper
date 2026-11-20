@@ -5,6 +5,7 @@ import {
   Hammer,
   Home,
   Shield,
+  Settings,
   TrendingUp,
   Wrench,
 } from 'lucide-react'
@@ -19,7 +20,7 @@ const NAV = [
   { id: 'build', label: 'Build', icon: Shield },
 ]
 
-export default function Sidebar({ active, onChange }) {
+export default function Sidebar({ active, onChange, onOpenSettings }) {
   return (
     <aside className="sticky top-0 flex h-screen w-[228px] shrink-0 flex-col border-r border-[var(--line)] bg-[var(--bg-raise)]">
       <button
@@ -62,6 +63,14 @@ export default function Sidebar({ active, onChange }) {
           )
         })}
       </nav>
+      <button
+        type="button"
+        onClick={onOpenSettings}
+        className="mx-3 mb-4 flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[14px] text-[#c4baae] transition hover:bg-white/[0.03] hover:text-[var(--text)]"
+      >
+        <Settings size={18} strokeWidth={1.75} className="text-[#b7aa96]" />
+        <span>Settings</span>
+      </button>
     </aside>
   )
 }

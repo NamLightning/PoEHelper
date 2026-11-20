@@ -4,6 +4,7 @@ import Topbar from './components/Topbar'
 import WealthChartCard from './components/WealthChartCard'
 import GoalCard from './components/GoalCard'
 import MethodGrid from './components/MethodGrid'
+import AccountSettingsModal from './components/AccountSettingsModal'
 import { BuildView, CraftView, MarketView, StashView, ToolsView } from './components/SectionViews'
 import { CONTEXTS, createSnapshot, refreshSnapshot, totalOf } from './data/mock'
 
@@ -17,6 +18,12 @@ export default function App() {
   const [now, setNow] = useState(() => Date.now())
   const [syncing, setSyncing] = useState(false)
   const [snapshot, setSnapshot] = useState(createSnapshot)
+  const [marketRate, setMarketRate] = useState(null)
+  const [marketRateError, setMarketRateError] = useState('')
+  const [accountSettingsOpen, setAccountSettingsOpen] = useState(false)
+  const [accountName, setAccountName] = useState('')
+  const [selectedCharacter, setSelectedCharacter] = useState(null)
+  const [selectedLeague, setSelectedLeague] = useState('')
 
   const context = CONTEXTS.find((item) => item.id === contextId) ?? CONTEXTS[2]
   const total = totalOf(snapshot) * context.factor
@@ -36,6 +43,67 @@ export default function App() {
     return () => window.clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetch('/api/account/config', { signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json()
+        if (!response.ok) {
+          throw new Error(result.error || `Account API returned HTTP ${response.status}.`)
+        }
+        return result
+      })
+      .then((config) => setAccountName(config.accountName || ''))
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.error('Could not load local account configuration:', error)
+        }
+      })
+
+    return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadMarketRate() {
+      const leaguesResponse = await fetch('/api/market/leagues', { signal: controller.signal })
+      const leaguesResult = await leaguesResponse.json()
+      if (!leaguesResponse.ok) {
+        throw new Error(leaguesResult.details || leaguesResult.error || `Market API returned HTTP ${leaguesResponse.status}.`)
+      }
+
+      const league = leaguesResult.defaultLeague
+      if (typeof league !== 'string' || !league) {
+        throw new Error('poe.ninja did not provide an active PoE 1 league.')
+      }
+
+      const marketResponse = await fetch(`/api/market/rate?league=${encodeURIComponent(league)}`, {
+        signal: controller.signal,
+      })
+      const marketResult = await marketResponse.json()
+      if (!marketResponse.ok) {
+        throw new Error(marketResult.details || marketResult.error || `Market API returned HTTP ${marketResponse.status}.`)
+      }
+      if (!Number.isFinite(marketResult.divineToChaos) || marketResult.divineToChaos <= 0) {
+        throw new Error('poe.ninja did not provide a valid Divine Orb rate.')
+      }
+
+      setMarketRate({ divineToChaos: marketResult.divineToChaos, league: marketResult.league })
+      setMarketRateError('')
+    }
+
+    loadMarketRate().catch((error) => {
+      if (error.name !== 'AbortError') {
+        setMarketRate(null)
+        setMarketRateError(error.message || 'Could not load the poe.ninja Divine Orb rate.')
+      }
+    })
+
+    return () => controller.abort()
+  }, [])
+
   function syncNow() {
     if (syncing) return
     setSyncing(true)
@@ -50,7 +118,11 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <Sidebar active={nav} onChange={setNav} />
+      <Sidebar
+        active={nav}
+        onChange={setNav}
+        onOpenSettings={() => setAccountSettingsOpen(true)}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
           contextId={contextId}
@@ -60,6 +132,9 @@ export default function App() {
           onNavigate={setNav}
           theme={theme}
           onToggleTheme={() => setTheme((value) => (value === 'ember' ? 'night' : 'ember'))}
+          accountName={accountName}
+          selectedCharacter={selectedCharacter}
+          onOpenAccount={() => setAccountSettingsOpen(true)}
         />
         <main className="min-w-0 flex-1 px-6 pb-10 pt-6 lg:px-8">
           {nav === 'home' ? (
@@ -79,6 +154,9 @@ export default function App() {
                   tabsTracked={snapshot.tabsTracked}
                   syncedAt={syncedAt}
                   now={now}
+                  divineToChaos={marketRate?.divineToChaos}
+                  league={marketRate?.league}
+                  rateError={marketRateError}
                   syncing={syncing}
                   onSync={syncNow}
                   onOpenStash={() => setNav('stash')}
@@ -97,7 +175,14 @@ export default function App() {
             </>
           ) : null}
           {nav === 'stash' ? <StashView query={query} factor={context.factor} /> : null}
-          {nav === 'market' ? <MarketView query={query} factor={context.factor} /> : null}
+          {nav === 'market' ? (
+            <MarketView
+              query={query}
+              selectedLeague={selectedLeague}
+              onLeagueChange={setSelectedLeague}
+              onNavigate={setNav}
+            />
+          ) : null}
           {nav === 'currency' ? (
             <>
               <header className="mb-5">
@@ -114,6 +199,24 @@ export default function App() {
           {nav === 'build' ? <BuildView query={query} /> : null}
         </main>
       </div>
+      <AccountSettingsModal
+        open={accountSettingsOpen}
+        onClose={() => setAccountSettingsOpen(false)}
+        onAccountName={setAccountName}
+        onAccountSaved={(name) => {
+          if (accountName && accountName !== name) {
+            setSelectedCharacter(null)
+            setSelectedLeague('')
+          }
+          setAccountName(name)
+        }}
+        onSelectCharacter={(character) => {
+          setSelectedCharacter(character)
+          setAccountName(character.accountName)
+          if (character.league) setSelectedLeague(character.league)
+        }}
+        selectedCharacter={selectedCharacter}
+      />
     </div>
   )
 }

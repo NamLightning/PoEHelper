@@ -10,6 +10,9 @@ export default function Topbar({
   onNavigate,
   theme,
   onToggleTheme,
+  accountName,
+  selectedCharacter,
+  onOpenAccount,
 }) {
   const inputRef = useRef(null)
   const boxRef = useRef(null)
@@ -18,6 +21,13 @@ export default function Topbar({
   const [note, setNote] = useState('')
   const [sent, setSent] = useState(false)
   const results = searchAll(query)
+  const profileTitle = accountName || 'Link PoE account'
+  const profileDetails = selectedCharacter
+    ? `${selectedCharacter.name}, ${selectedCharacter.class || 'Unknown class'} ${selectedCharacter.level ?? '—'} · ${selectedCharacter.league || 'Unknown league'}`
+    : accountName
+      ? 'Choose a character'
+      : 'Not connected'
+  const profileInitials = (selectedCharacter?.name || accountName || 'PoE').slice(0, 2).toUpperCase()
 
   useEffect(() => {
     function onKey(event) {
@@ -176,15 +186,20 @@ export default function Topbar({
           <SunMedium size={16} />
         </button>
 
-        <div className="flex items-center gap-2.5 pl-1">
+        <button
+          type="button"
+          onClick={onOpenAccount}
+          aria-label="Open Account & Character settings"
+          className="flex min-w-0 items-center gap-2.5 rounded-full pl-1 text-left hover:opacity-85"
+        >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-[#e7a15a] via-[#c46a3a] to-[#7a3b22] text-[11px] font-semibold text-white ring-1 ring-[#e6c48a]/40">
-            JD
+            {profileInitials}
           </span>
-          <span className="hidden leading-tight lg:block">
-            <span className="block text-[13px] font-medium">JambeDeBwa#6439</span>
-            <span className="block text-[11px] text-[var(--muted)]">JambExile, Hierophant 94</span>
+          <span className="hidden min-w-0 max-w-56 leading-tight lg:block">
+            <span className="block truncate text-[13px] font-medium">{profileTitle}</span>
+            <span className="block truncate text-[11px] text-[var(--muted)]">{profileDetails}</span>
           </span>
-        </div>
+        </button>
       </div>
     </header>
   )

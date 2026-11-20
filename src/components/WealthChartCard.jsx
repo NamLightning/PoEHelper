@@ -31,6 +31,9 @@ export default function WealthChartCard({
   tabsTracked,
   syncedAt,
   now,
+  divineToChaos,
+  league,
+  rateError,
   syncing,
   onSync,
   onOpenStash,
@@ -56,7 +59,16 @@ export default function WealthChartCard({
             <span className="grid h-3.5 w-3.5 place-items-center rounded-full bg-gradient-to-br from-[#f0d48a] to-[#a56b22] text-[8px] font-bold text-[#2a1c08]">
               c
             </span>
-            ≈ {formatChaos(total)} chaos
+            {Number.isFinite(divineToChaos) ? (
+              <>
+                ≈ {formatChaos(total, divineToChaos)} chaos
+                <span className="text-xs text-[var(--muted)]">
+                  ({divineToChaos.toLocaleString('en-US', { maximumFractionDigits: 2 })} chaos/div · {league})
+                </span>
+              </>
+            ) : (
+              <span title={rateError || undefined}>Chaos equivalent unavailable</span>
+            )}
           </p>
         </div>
         <div className="hidden h-14 w-px self-center bg-[var(--line)] sm:block" />

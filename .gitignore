@@ -2,4 +2,6 @@ node_modules
 dist
 .vite
 *.local
+config.local.json
+config.local.json.*.tmp
 .DS_Store

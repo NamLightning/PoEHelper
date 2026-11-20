@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { BUILD_ITEMS, CRAFTS, MARKET, STASH_TABS, TOOLS } from '../data/mock'
+import { BUILD_ITEMS, CRAFTS, STASH_TABS, TOOLS } from '../data/mock'
 import { formatDiv, matchesQuery } from '../lib/format'
+
+export { default as MarketView } from './MarketView'
 
 function Empty({ query }) {
   return (
@@ -56,45 +58,6 @@ export function StashView({ query, factor }) {
             </p>
           ) : null}
         </>
-      )}
-    </Page>
-  )
-}
-
-export function MarketView({ query, factor }) {
-  const rows = MARKET.filter((row) => matchesQuery(query, row.name, row.tag, row.note))
-  return (
-    <Page title="Market" subtitle="Mock listings. Positive change is the session move, not a live trade API.">
-      {rows.length === 0 ? (
-        <Empty query={query} />
-      ) : (
-        <div className="panel overflow-hidden">
-          <div className="grid grid-cols-[minmax(0,1.4fr)_120px_110px_90px] gap-3 border-b border-[var(--line)] px-4 py-2 text-[11px] uppercase tracking-wide text-[var(--faint)]">
-            <span>Item</span>
-            <span>Tag</span>
-            <span className="text-right">Price</span>
-            <span className="text-right">Move</span>
-          </div>
-          <ul>
-            {rows.map((row) => (
-              <li
-                key={row.id}
-                className="grid grid-cols-[minmax(0,1.4fr)_120px_110px_90px] items-center gap-3 border-b border-[var(--line)] px-4 py-3 last:border-b-0"
-              >
-                <span className="min-w-0">
-                  <span className="block truncate text-sm">{row.name}</span>
-                  <span className="block truncate text-xs text-[var(--muted)]">{row.note}</span>
-                </span>
-                <span className="text-sm text-[#d5cbbd]">{row.tag}</span>
-                <span className="text-right font-num text-sm">{formatDiv(row.price * factor)} div</span>
-                <span className={`text-right font-num text-sm ${row.change >= 0 ? 'text-[var(--mint)]' : 'text-[#e07a68]'}`}>
-                  {row.change > 0 ? '+' : ''}
-                  {row.change.toFixed(1)}%
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
       )}
     </Page>
   )

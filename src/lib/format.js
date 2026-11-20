@@ -1,11 +1,9 @@
-export const CHAOS_PER_DIV = 153.6
-
 export function formatDiv(value) {
   return (Math.round(value * 10) / 10).toFixed(1)
 }
 
-export function formatChaos(div) {
-  return Math.round(div * CHAOS_PER_DIV).toLocaleString('en-US')
+export function formatChaos(div, chaosPerDiv) {
+  return Math.round(div * chaosPerDiv).toLocaleString('en-US')
 }
 
 export function formatRate(gain, sessionMs) {
