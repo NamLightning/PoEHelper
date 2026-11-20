@@ -1,0 +1,119 @@
+import { useEffect, useState } from 'react'
+import Sidebar from './components/Sidebar'
+import Topbar from './components/Topbar'
+import WealthChartCard from './components/WealthChartCard'
+import GoalCard from './components/GoalCard'
+import MethodGrid from './components/MethodGrid'
+import { BuildView, CraftView, MarketView, StashView, ToolsView } from './components/SectionViews'
+import { CONTEXTS, createSnapshot, refreshSnapshot, totalOf } from './data/mock'
+
+export default function App() {
+  const [nav, setNav] = useState('home')
+  const [query, setQuery] = useState('')
+  const [contextId, setContextId] = useState('covens')
+  const [theme, setTheme] = useState('night')
+  const [goalTab, setGoalTab] = useState('goal')
+  const [syncedAt, setSyncedAt] = useState(() => Date.now() - 12 * 60 * 1000)
+  const [now, setNow] = useState(() => Date.now())
+  const [syncing, setSyncing] = useState(false)
+  const [snapshot, setSnapshot] = useState(createSnapshot)
+
+  const context = CONTEXTS.find((item) => item.id === contextId) ?? CONTEXTS[2]
+  const total = totalOf(snapshot) * context.factor
+  const sessionGain = snapshot.sessionGain * context.factor
+  const perHour = sessionGain / (snapshot.sessionMs / 3_600_000)
+  const series = snapshot.series.map((point) => ({
+    ...point,
+    value: Math.round(point.value * context.factor * 10) / 10,
+  }))
+
+  useEffect(() => {
+    document.documentElement.dataset.tone = theme
+  }, [theme])
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 15000)
+    return () => window.clearInterval(id)
+  }, [])
+
+  function syncNow() {
+    if (syncing) return
+    setSyncing(true)
+    window.setTimeout(() => {
+      setSnapshot((prev) => refreshSnapshot(prev))
+      const stamp = Date.now()
+      setSyncedAt(stamp)
+      setNow(stamp)
+      setSyncing(false)
+    }, 700)
+  }
+
+  return (
+    <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <Sidebar active={nav} onChange={setNav} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Topbar
+          contextId={contextId}
+          onContext={setContextId}
+          query={query}
+          onQuery={setQuery}
+          onNavigate={setNav}
+          theme={theme}
+          onToggleTheme={() => setTheme((value) => (value === 'ember' ? 'night' : 'ember'))}
+        />
+        <main className="min-w-0 flex-1 px-6 pb-10 pt-6 lg:px-8">
+          {nav === 'home' ? (
+            <>
+              <header className="mb-5">
+                <h1 className="text-[28px] font-semibold tracking-tight">Welcome back, JambeDeBwa</h1>
+                <p className="mt-1 text-sm text-[var(--muted)]">
+                  Everything below is priced in {context.priceLabel}.
+                </p>
+              </header>
+              <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+                <WealthChartCard
+                  series={series}
+                  total={total}
+                  sessionGain={sessionGain}
+                  sessionMs={snapshot.sessionMs}
+                  tabsTracked={snapshot.tabsTracked}
+                  syncedAt={syncedAt}
+                  now={now}
+                  syncing={syncing}
+                  onSync={syncNow}
+                  onOpenStash={() => setNav('stash')}
+                />
+                <GoalCard
+                  wealth={total}
+                  perHour={perHour}
+                  target={context.target}
+                  tab={goalTab}
+                  onTab={setGoalTab}
+                />
+              </div>
+              <div className="mt-5">
+                <MethodGrid query={query} factor={context.factor} />
+              </div>
+            </>
+          ) : null}
+          {nav === 'stash' ? <StashView query={query} factor={context.factor} /> : null}
+          {nav === 'market' ? <MarketView query={query} factor={context.factor} /> : null}
+          {nav === 'currency' ? (
+            <>
+              <header className="mb-5">
+                <h1 className="text-[28px] font-semibold tracking-tight">Make Currency</h1>
+                <p className="mt-1 text-sm text-[var(--muted)]">
+                  Strategies priced in {context.priceLabel}. Filter the grid or search from the top bar.
+                </p>
+              </header>
+              <MethodGrid query={query} factor={context.factor} />
+            </>
+          ) : null}
+          {nav === 'tools' ? <ToolsView query={query} /> : null}
+          {nav === 'craft' ? <CraftView query={query} factor={context.factor} /> : null}
+          {nav === 'build' ? <BuildView query={query} /> : null}
+        </main>
+      </div>
+    </div>
+  )
+}
