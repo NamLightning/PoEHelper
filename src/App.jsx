@@ -24,6 +24,8 @@ export default function App() {
   const [selectedLeague, setSelectedLeague] = useState('')
 
   const context = CONTEXTS.find((item) => item.id === contextId) ?? CONTEXTS[2]
+  const activeLeague = marketRate?.league || selectedCharacter?.league || 'Standard'
+  const stashAccountName = String(accountName || '').split('#')[0].trim()
   const total = totalOf(snapshot) * context.factor
   const sessionGain = snapshot.sessionGain * context.factor
   const perHour = sessionGain / (snapshot.sessionMs / 3_600_000)
@@ -162,8 +164,9 @@ export default function App() {
           {nav === 'stash' ? (
             <StashView
               query={query}
-              league={marketRate?.league}
+              league={activeLeague}
               divineToChaos={marketRate?.divineToChaos}
+              accountName={stashAccountName}
             />
           ) : null}
           {nav === 'market' ? (
@@ -182,6 +185,7 @@ export default function App() {
       <AccountSettingsModal
         open={accountSettingsOpen}
         onClose={() => setAccountSettingsOpen(false)}
+        league={activeLeague}
         onAccountName={setAccountName}
         onAccountSaved={(name) => {
           if (accountName && accountName !== name) {

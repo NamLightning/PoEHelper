@@ -12,6 +12,9 @@ import {
   Search,
   Sparkles,
 } from 'lucide-react'
+import { LineChart, Line, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { fetchStashTabs, readStashCache, syncTabs, writeStashCache } from '../services/stashService'
+import { priceStashItems } from '../utils/stashPricer'
 
 const STASH_TABS = [
   { id: 'tab-1', label: '1', kind: 'premium' },
@@ -46,9 +49,15 @@ const SNAPSHOTS = [
   { id: 'snapshot-1', label: 'Before mapping', time: '3 minutes ago', items: STASH_ITEMS.slice(0, 14) },
   { id: 'snapshot-2', label: 'After trade session', time: 'Yesterday', items: STASH_ITEMS.slice(2, 15) },
 ]
+const SNAPSHOT_KEY = 'poe.stash.snapshots'
 
 const quantityFormat = new Intl.NumberFormat('en-US')
 const chaosFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 3 })
+
+function getErrorMessage(error) {
+  if (typeof error === 'string') return error
+  return error?.error?.message || error?.message || (error ? JSON.stringify(error) : 'Unknown stash sync error.')
+}
 
 function StashTabIcon({ kind }) {
   if (kind === 'premium') return <Gem size={15} className="shrink-0 text-[#9cc8d8]" />
@@ -88,10 +97,16 @@ function formatTotal(value, divineToChaos) {
   return `${Math.round(value)}c`
 }
 
-function sortableValue(item, key) {
+function sortableValue(item, key, tabs) {
   if (key === 'total') return item.quantity * item.price
-  if (key === 'tab') return STASH_TABS.find((tab) => tab.id === item.tabId)?.label || ''
+  if (key === 'tab') return tabs.find((tab) => tab.id === item.tabId)?.label || item.tab || ''
   return item[key]
+}
+
+function itemTabName(item, tabs = []) {
+  const directName = String(item?.tab || '').trim()
+  if (directName) return directName
+  return String(tabs.find((tab) => tab.id === item?.tabId)?.label || tabs.find((tab) => tab.id === item?.tabId)?.name || 'Unknown').trim()
 }
 
 function iconNameForItem(item) {
@@ -100,10 +115,13 @@ function iconNameForItem(item) {
   return item.name
 }
 
-export default function StashView({ query = '', league = 'Standard', divineToChaos = 225 }) {
+export default function StashView({ query = '', league = 'Standard', divineToChaos = 225, accountName = '' }) {
   const [mode, setMode] = useState('tabs')
   const [selectedTab, setSelectedTab] = useState('all')
   const [selectedSnapshot, setSelectedSnapshot] = useState(SNAPSHOTS[0].id)
+  const [snapshots, setSnapshots] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || 'null') || SNAPSHOTS } catch { return SNAPSHOTS }
+  })
   const [search, setSearch] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [minimumPrice, setMinimumPrice] = useState('')
@@ -114,6 +132,17 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
   const [menuOpen, setMenuOpen] = useState(false)
   const [notice, setNotice] = useState('')
   const [iconMap, setIconMap] = useState({})
+  const [stashTabs, setStashTabs] = useState(() => readStashCache().tabs || STASH_TABS)
+  const [stashItems, setStashItems] = useState(() => readStashCache().pricedItems || STASH_ITEMS)
+  const [syncing, setSyncing] = useState(false)
+  const [syncProgress, setSyncProgress] = useState('')
+  const [syncedTabIndices, setSyncedTabIndices] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('poe.syncedTabIndices') || '[]') } catch { return [] }
+  })
+  const [tabEditorOpen, setTabEditorOpen] = useState(false)
+  const [extensionId] = useState(() => localStorage.getItem('poehelper.extensionId') || '')
+  const [sellOpen, setSellOpen] = useState(false)
+  const [sellMultiplier, setSellMultiplier] = useState(95)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -157,31 +186,83 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
   }, [league])
 
   useEffect(() => {
+    if (!accountName) return
+    fetchStashTabs(accountName, league).then(setStashTabs).catch((error) => {
+      console.error('Could not fetch PoE stash tabs:', error?.response || error)
+      setNotice(getErrorMessage(error))
+    })
+  }, [accountName, league])
+
+  useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 30000)
     return () => window.clearInterval(timer)
   }, [])
 
-  const snapshot = SNAPSHOTS.find((entry) => entry.id === selectedSnapshot) || SNAPSHOTS[0]
-  const sourceItems = mode === 'snapshots' ? snapshot.items : STASH_ITEMS
+  useEffect(() => { localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(snapshots)) }, [snapshots])
+
+  const snapshot = snapshots.find((entry) => entry.id === selectedSnapshot) || snapshots[0] || SNAPSHOTS[0]
+  const sourceItems = mode === 'snapshots' ? snapshot.items : stashItems
+  const displayTabs = useMemo(() => {
+    const grouped = new Map()
+    stashItems.forEach((item) => {
+      const name = itemTabName(item, stashTabs) || 'Unknown'
+      const key = name.toLowerCase()
+      const existing = grouped.get(key)
+      const totalChaos = Number(item.totalChaos) || Number(item.quantity || 0) * Number(item.price || item.priceChaos || 0)
+      if (existing) {
+        existing.totalChaos += totalChaos
+        existing.quantity += Number(item.quantity) || 0
+      } else {
+        const sourceTab = stashTabs.find((tab) => String(tab.label || tab.name || '').trim().toLowerCase() === key)
+        grouped.set(key, {
+          ...(sourceTab || {}),
+          id: name,
+          label: name,
+          name,
+          kind: sourceTab?.kind || 'Wealthy Exile',
+          color: sourceTab?.color || '#8b7355',
+          totalChaos,
+          quantity: Number(item.quantity) || 0,
+        })
+      }
+    })
+    return [...grouped.values()]
+  }, [stashItems, stashTabs])
+  const tabById = useMemo(() => new Map(displayTabs.map((tab) => [tab.id, tab])), [displayTabs])
   const rows = useMemo(() => {
     const localNeedle = search.trim().toLowerCase()
     const globalNeedle = query.trim().toLowerCase()
     const minimum = Number(minimumPrice)
+    const selectedTabKey = selectedTab.trim().toLowerCase()
     return sourceItems
-      .filter((item) => mode === 'snapshots' || selectedTab === 'all' || item.tabId === selectedTab)
+      .filter((item) => mode === 'snapshots' || selectedTabKey === 'all' || itemTabName(item, stashTabs).toLowerCase() === selectedTabKey)
       .filter((item) => !globalNeedle || item.name.toLowerCase().includes(globalNeedle))
       .filter((item) => !localNeedle || item.name.toLowerCase().includes(localNeedle))
       .filter((item) => !Number.isFinite(minimum) || minimum <= 0 || item.price >= minimum)
       .sort((left, right) => {
         const direction = sort.direction === 'asc' ? 1 : -1
-        const a = sortableValue(left, sort.key)
-        const b = sortableValue(right, sort.key)
+        const tabs = displayTabs
+        const a = sortableValue(left, sort.key, tabs)
+        const b = sortableValue(right, sort.key, tabs)
         return (typeof a === 'string' ? a.localeCompare(b) : a - b) * direction
       })
-  }, [minimumPrice, mode, query, search, selectedTab, sort, sourceItems])
+  }, [displayTabs, minimumPrice, mode, query, search, selectedTab, sort, sourceItems, stashTabs])
+  const filteredTotalChaos = useMemo(() => rows.reduce((sum, item) => sum + (Number(item.totalChaos) || Number(item.quantity || 0) * Number(item.price || item.priceChaos || 0)), 0), [rows])
 
   const allVisibleSelected = rows.length > 0 && rows.every((item) => selectedIds.includes(item.id))
   const selectedCount = selectedIds.length
+  const selectedRows = stashItems.filter((item) => selectedIds.includes(item.id))
+  const sellText = selectedRows.map((item) => {
+    const price = Math.max(0.01, (Number(item.price) || 0) * sellMultiplier / 100)
+    return `${item.quantity}x ${item.name} for ${price.toFixed(2)} chaos each`
+  }).join('\n')
+
+  function addSnapshot(nextItems) {
+    const totalChaos = nextItems.reduce((sum, item) => sum + (Number(item.totalChaos) || Number(item.quantity || 0) * Number(item.price || item.priceChaos || 0)), 0)
+    const snapshotEntry = { id: `snapshot-${Date.now()}`, label: 'Sync snapshot', timestamp: Date.now(), time: new Date().toLocaleString(), totalChaos, totalDivine: totalChaos / (divineToChaos || 225), items: nextItems }
+    setSnapshots((current) => [snapshotEntry, ...current].slice(0, 30))
+    setSelectedSnapshot(snapshotEntry.id)
+  }
 
   function toggleSort(key) {
     setSort((current) => ({
@@ -204,11 +285,95 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
     ))
   }
 
-  function syncNow() {
-    setSyncedAt(Date.now())
-    setNow(Date.now())
-    setNotice('Stash data refreshed.')
-    window.setTimeout(() => setNotice(''), 2500)
+  async function syncNow() {
+    if (syncing) return
+    if (!accountName) { setNotice('Set an account name before syncing stash.'); return }
+    if (!syncedTabIndices.length) { setNotice('Click Edit synced tabs first.'); return }
+    setSyncing(true)
+    try {
+      const bridgeReady = document.documentElement.dataset.weExtensionReady === 'true'
+      if (bridgeReady || extensionId) {
+        setSyncProgress('Syncing via Wealthy Exile...')
+        const extensionResult = bridgeReady
+          ? await new Promise((resolve, reject) => {
+            const timeout = window.setTimeout(() => {
+              window.removeEventListener('message', onResponse)
+              reject(new Error('Extension bridge timed out. Reload the extension and localhost page.'))
+            }, 30000)
+            function onResponse(event) {
+              if (event.source !== window || event.data?.type !== 'WE_SYNC_RESPONSE') return
+              window.clearTimeout(timeout)
+              window.removeEventListener('message', onResponse)
+              const result = event.data.payload
+              if (!result?.success) reject(new Error(result?.error || 'Wealthy Exile sync failed.'))
+              else resolve(result)
+            }
+            window.addEventListener('message', onResponse)
+            window.postMessage({ type: 'WE_SYNC_REQUEST' }, '*')
+          })
+          : await new Promise((resolve, reject) => {
+            if (!globalThis.chrome?.runtime?.sendMessage) {
+              reject(new Error('Chrome Extension API is unavailable. Check the Extension ID and reload the page.'))
+              return
+            }
+            globalThis.chrome.runtime.sendMessage(extensionId, { action: 'START_WEALTHY_EXILE_SYNC' }, (result) => {
+              const runtimeError = globalThis.chrome.runtime.lastError
+              if (runtimeError) reject(new Error(runtimeError.message))
+              else if (!result?.success) reject(new Error(result?.error || 'Wealthy Exile sync failed.'))
+              else resolve(result)
+            })
+          })
+        const response = await fetch('/api/stash-sync')
+        const synced = await response.json()
+        if (!response.ok || synced.error) throw new Error(synced.error?.message || 'Could not load extension stash data.')
+        const imported = (synced.items || []).map((item, index) => ({
+          ...item,
+          id: item.id || `wealthy-exile-${index}`,
+          name: item.name || 'Unknown item',
+          tab: String(item.tab || '').trim() || 'Unknown',
+          tabId: String(item.tab || '').trim() || 'Unknown',
+          tabName: String(item.tab || '').trim() || 'Unknown',
+          quantity: Number(item.quantity) || 1,
+          price: Number(item.priceChaos) || 0,
+          totalChaos: Number(item.totalChaos) || 0,
+        }))
+        const importedTabs = (synced.tabs || []).map((tab, index) => ({
+          ...tab,
+          id: tab.label || tab.name || tab.id || `wealthy-${index}`,
+          index: Number.isInteger(tab.index) ? tab.index : index,
+          label: tab.label || tab.name || `Tab ${index + 1}`,
+          name: tab.name || tab.label || `Tab ${index + 1}`,
+          kind: tab.kind || 'Wealthy Exile',
+          color: tab.color || '#8b7355',
+        }))
+        if (importedTabs.length) setStashTabs(importedTabs)
+        setSelectedTab('all')
+        setStashItems(imported)
+        writeStashCache({ ...readStashCache(), pricedItems: imported, tabs: importedTabs, syncedAt: Date.now() })
+        addSnapshot(imported)
+        setSyncedAt(Date.now())
+        setNow(Date.now())
+        setNotice(`Synced ${imported.length} items via Wealthy Exile.`)
+        void extensionResult
+        return
+      }
+      const rawItems = await syncTabs(accountName, league, syncedTabIndices, setSyncProgress)
+      const categories = ['currency', 'fragments', 'divination-cards', 'skill-gems', 'imbued-gems', 'unique-weapons', 'unique-armours', 'cluster-jewels', 'maps', 'scarabs', 'essences', 'fossils']
+      const marketResults = await Promise.all(categories.map((category) => fetch(`/api/market/category?league=${encodeURIComponent(league)}&category=${category}`).then((response) => response.ok ? response.json() : {}).catch(() => ({}))))
+      const marketItems = marketResults.flatMap((market) => market.items || [])
+      const priced = priceStashItems(rawItems, marketItems, divineToChaos)
+      setStashItems(priced)
+      addSnapshot(priced)
+      const cache = readStashCache()
+      localStorage.setItem('poe.stash.cache.v1', JSON.stringify({ ...cache, pricedItems: priced }))
+      setSyncedAt(Date.now())
+      setNow(Date.now())
+      setNotice(`Synced ${priced.length} stash items.`)
+    } catch (error) {
+      console.error('Could not sync PoE stash:', error?.response || error)
+      setNotice(getErrorMessage(error))
+    }
+    finally { setSyncing(false); setSyncProgress('') }
   }
 
   const syncedMinutes = Math.max(0, Math.floor((now - syncedAt) / 60000))
@@ -251,9 +416,9 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
                   className={`flex h-8 w-full items-center gap-2 px-2 text-left text-sm ${selectedTab === 'all' ? 'bg-[#584335] text-[#f4d0a6]' : 'bg-[#4b3b30] text-[#dcb98e] hover:bg-[#584335]'}`}
                 >
                   <Layers3 size={15} />
-                  <span>All tabs</span>
+                  <span>All Stashes</span>
                 </button>
-                {STASH_TABS.map((tab) => (
+                {displayTabs.map((tab) => (
                   <button
                     type="button"
                     key={tab.id}
@@ -270,22 +435,22 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
                     }`}
                   >
                     <StashTabIcon kind={tab.kind} />
-                    <span className="truncate">{tab.label}</span>
+                    <span className="truncate">{tab.label || tab.name}</span>
                   </button>
                 ))}
               </nav>
               <button
                 type="button"
-                onClick={() => setNotice('Synced tabs are managed by the local account connection.')}
+                onClick={() => setTabEditorOpen(true)}
                 className="mt-4 flex items-center gap-2 px-2 text-sm font-medium text-[#50b7f4] hover:text-[#83d0ff]"
               >
                 <Pencil size={15} />
                 Edit synced tabs
               </button>
             </>
-          ) : (
-            <nav aria-label="Saved stash snapshots" className="space-y-1 px-2">
-              {SNAPSHOTS.map((entry) => (
+          ) : (<>
+            <div aria-label="Saved stash snapshots" className="space-y-1 px-2">
+              {snapshots.map((entry) => (
                 <button
                   type="button"
                   key={entry.id}
@@ -293,13 +458,26 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
                   aria-current={selectedSnapshot === entry.id ? 'page' : undefined}
                   className={`w-full rounded px-2 py-2 text-left transition ${selectedSnapshot === entry.id ? 'bg-[#383838] text-white' : 'text-[#a9a9a9] hover:bg-[#2d2d2d] hover:text-white'}`}
                 >
-                  <span className="block truncate text-sm">{entry.label}</span>
+                  <span className="block truncate text-sm">{entry.label || 'Sync snapshot'}</span>
                   <span className="mt-1 flex items-center gap-1 text-[11px] text-[#858585]">
-                    <Clock3 size={11} /> {entry.time}
+                    <Clock3 size={11} /> {entry.time || new Date(entry.timestamp).toLocaleString()}
                   </span>
                 </button>
               ))}
-            </nav>
+            </div>
+            {snapshots.length > 1 ? (
+              <div className="mt-4 h-36 px-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={[...snapshots].reverse()}>
+                    <CartesianGrid stroke="#383838" strokeDasharray="3 3" />
+                    <XAxis dataKey="timestamp" hide />
+                    <YAxis hide />
+                    <Tooltip contentStyle={{ background: '#292929', border: '1px solid #555' }} formatter={(value) => [`${Number(value).toFixed(2)}d`, 'Value']} />
+                    <Line type="monotone" dataKey="totalDivine" stroke="#d4b36a" strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : null}</>
           )}
         </aside>
 
@@ -354,20 +532,21 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="hidden text-sm text-[#939393] sm:inline">Synced {syncedLabel}</span>
+              <span className="hidden text-sm text-[#939393] sm:inline">{syncing ? syncProgress : `Synced ${syncedLabel}`}</span>
               <button
                 type="button"
                 onClick={syncNow}
+                disabled={syncing}
                 aria-label="Refresh stash"
                 title="Refresh stash"
                 className="grid h-9 w-9 place-items-center border border-[#414141] bg-[#292929] text-[#c5c5c5] hover:bg-[#383838] hover:text-white"
               >
-                <RefreshCw size={17} />
+                <RefreshCw size={17} className={syncing ? 'animate-spin' : ''} />
               </button>
               <button
                 type="button"
                 disabled={!selectedCount}
-                onClick={() => setNotice(`${selectedCount} item${selectedCount === 1 ? '' : 's'} selected for sale.`)}
+                onClick={() => setSellOpen(true)}
                 className="inline-flex h-9 items-center gap-2 border border-[#414141] bg-[#292929] px-3 text-sm font-medium text-[#d0d0d0] transition enabled:hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <span className="text-[#aaa]">$</span> Sell
@@ -440,6 +619,7 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
                   <div
                     key={item.id}
                     className={`grid min-h-12 grid-cols-[42px_minmax(250px,1.8fr)_minmax(130px,.8fr)_minmax(110px,.65fr)_minmax(110px,.65fr)_minmax(110px,.65fr)] border-b border-[#3a3a3a] transition-colors hover:bg-[#2b2b2b] ${checked ? 'bg-[#2d3438]' : ''}`}
+                    style={{ contentVisibility: 'auto', containIntrinsicSize: '44px' }}
                   >
                     <div className="flex items-center justify-center">
                       <input
@@ -451,16 +631,16 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
                       />
                     </div>
                     <div className="flex min-w-0 items-center gap-3 border-l border-[#383838] px-3">
-                      <StashItemIcon item={item} icon={iconMap[item.id]} />
+                      <StashItemIcon item={item} icon={item.icon || iconMap[item.id]} />
                       <span className="truncate text-sm text-[#d5dce0]">{item.name}</span>
                     </div>
                     <button
                       type="button"
-                      onClick={() => { setMode('tabs'); setSelectedTab(item.tabId) }}
+                      onClick={() => { setMode('tabs'); setSelectedTab(itemTabName(item, stashTabs)) }}
                       className="flex items-center gap-2 border-l border-[#383838] px-3 text-left text-sm text-[#d5dce0] hover:bg-[#333]"
                     >
-                      <StashTabIcon kind={STASH_TABS.find((tab) => tab.id === item.tabId)?.kind} />
-                      {STASH_TABS.find((tab) => tab.id === item.tabId)?.label || '—'}
+                      <StashTabIcon kind={tabById.get(itemTabName(item, stashTabs))?.kind} />
+                      {itemTabName(item, stashTabs) || '—'}
                     </button>
                     <span className="flex items-center border-l border-[#383838] px-3 font-mono text-sm tabular-nums text-[#d5dce0]">
                       {quantityFormat.format(item.quantity)}
@@ -483,13 +663,35 @@ export default function StashView({ query = '', league = 'Standard', divineToCha
 
           <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#3b3b3b] px-4 py-3 text-xs text-[#858585]">
             <span>
-              {rows.length} item{rows.length === 1 ? '' : 's'} · {selectedCount} selected
+              {rows.length} item{rows.length === 1 ? '' : 's'} · {selectedCount} selected · {chaosFormat.format(filteredTotalChaos)}c ({chaosFormat.format(filteredTotalChaos / (divineToChaos || 225))}d)
               {mode === 'snapshots' ? ` · ${snapshot.label}` : ''}
             </span>
             <span>Values are estimates in chaos orbs</span>
           </footer>
         </div>
       </div>
+      {tabEditorOpen ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
+          <div className="w-full max-w-md border border-[#4a4a4a] bg-[#252525] p-5 shadow-2xl">
+            <div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Edit synced tabs</h2><button type="button" onClick={() => setTabEditorOpen(false)}>×</button></div>
+            <div className="mt-4 max-h-64 space-y-1 overflow-auto">
+              {stashTabs.map((tab) => <label key={tab.id} className="flex items-center gap-3 border-b border-[#393939] px-2 py-2 text-sm"><input type="checkbox" checked={syncedTabIndices.includes(tab.index)} onChange={() => setSyncedTabIndices((current) => current.includes(tab.index) ? current.filter((index) => index !== tab.index) : [...current, tab.index])} className="h-4 w-4 accent-[#55a9da]" /><span style={{ color: tab.color }}>{tab.label || tab.name}</span><span className="ml-auto text-xs text-[#888]">{tab.kind}</span></label>)}
+            </div>
+            <div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setTabEditorOpen(false)} className="px-3 py-2 text-sm text-[#aaa]">Cancel</button><button type="button" onClick={() => { localStorage.setItem('poe.syncedTabIndices', JSON.stringify(syncedTabIndices)); setTabEditorOpen(false); setNotice(`${syncedTabIndices.length} tabs selected for sync.`) }} className="bg-[#4b83a3] px-3 py-2 text-sm text-white">Save tabs</button></div>
+          </div>
+        </div>
+      ) : null}
+      {sellOpen ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
+          <div className="w-full max-w-lg border border-[#4a4a4a] bg-[#252525] p-5 shadow-2xl">
+            <div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Bulk Sell</h2><button type="button" onClick={() => setSellOpen(false)}>×</button></div>
+            <p className="mt-1 text-xs text-[#999]">{selectedCount} selected item{selectedCount === 1 ? '' : 's'}</p>
+            <div className="mt-4 flex gap-2">{[100, 95, 90].map((value) => <button key={value} type="button" onClick={() => setSellMultiplier(value)} className={`px-3 py-2 text-sm ${sellMultiplier === value ? 'bg-[#4b83a3] text-white' : 'bg-[#333] text-[#bbb]'}`}>{value}% Market</button>)}</div>
+            <textarea readOnly value={sellText} className="mt-4 h-44 w-full resize-none border border-[#444] bg-[#191919] p-3 font-mono text-xs text-[#ddd]" />
+            <button type="button" onClick={() => { navigator.clipboard?.writeText(sellText); setNotice('Bulk Sell message copied.'); setSellOpen(false) }} className="mt-3 rounded bg-[#d4b36a] px-3 py-2 text-sm text-[#1a140c]">Copy</button>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

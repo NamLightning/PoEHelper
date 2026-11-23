@@ -38,6 +38,20 @@ function errorStatus(error) {
   return error.message || 'Không thể kết nối tài khoản Path of Exile.'
 }
 
+async function validateStashSession(accountName, league) {
+  const cleanAccountName = String(accountName || '').split('#')[0].trim()
+  const cleanLeague = String(league || 'Standard').trim()
+  const query = new URLSearchParams({ accountName: cleanAccountName, realm: 'pc', league: cleanLeague, tabs: '1', tabIndex: '0' })
+  const response = await fetch(`/poe-stash/get-stash-items?${query.toString()}`)
+  const result = await response.json().catch(() => ({}))
+  if (result?.error || !response.ok) {
+    const error = new Error(result?.error?.message || result?.message || `Stash API returned HTTP ${response.status}.`)
+    error.code = result?.error?.code
+    throw error
+  }
+  return result
+}
+
 export default function AccountSettingsModal({
   open,
   onClose,
@@ -45,6 +59,7 @@ export default function AccountSettingsModal({
   onAccountSaved,
   onSelectCharacter,
   selectedCharacter,
+  league = 'Standard',
 }) {
   const [accountName, setAccountName] = useState('')
   const [sessionId, setSessionId] = useState('')
@@ -55,6 +70,7 @@ export default function AccountSettingsModal({
   const [saving, setSaving] = useState(false)
   const [loadingCharacters, setLoadingCharacters] = useState(false)
   const [status, setStatus] = useState({ kind: 'idle', message: '' })
+  const [extensionId, setExtensionId] = useState(() => localStorage.getItem('poehelper.extensionId') || '')
 
   useEffect(() => {
     if (!open) {
@@ -125,6 +141,13 @@ export default function AccountSettingsModal({
       setSessionId('')
       setStatus({ kind: 'neutral', message: 'Đã lưu cục bộ. Đang kiểm tra kết nối…' })
       await loadCharacters()
+      try {
+        const stashResult = await validateStashSession(config.accountName || accountName, league)
+        const tabCount = Array.isArray(stashResult.tabs) ? stashResult.tabs.length : 0
+        setStatus({ kind: 'success', message: `Connected! Found ${tabCount} stash tabs` })
+      } catch (error) {
+        setStatus({ kind: 'error', message: error.code === 6 ? 'POESESSID bị GGG từ chối (code 6 Forbidden).' : error.message })
+      }
     } catch (error) {
       setStatus({ kind: 'error', message: errorStatus(error) })
     } finally {
@@ -203,6 +226,22 @@ export default function AccountSettingsModal({
               >
                 {showSessionId ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
+            </span>
+          </label>
+
+          <label className="block text-sm">
+            Extension ID (optional)
+            <input
+              value={extensionId}
+              onChange={(event) => {
+                setExtensionId(event.target.value.trim())
+                localStorage.setItem('poehelper.extensionId', event.target.value.trim())
+              }}
+              placeholder="Paste the ID from chrome://extensions"
+              className="mt-1.5 w-full rounded-xl border border-[var(--line)] bg-black/20 px-3 py-2.5 text-sm outline-none focus:border-[var(--line-strong)]"
+            />
+            <span className="mt-1.5 block text-xs leading-relaxed text-[var(--muted)]">
+              1. Mở chrome://extensions · 2. Bật Developer mode và Load unpacked thư mục chrome-extension · 3. Copy Extension ID vào đây.
             </span>
           </label>
 
