@@ -1,10 +1,21 @@
 import { MARKET_CATEGORIES } from '../src/data/marketCategories.js'
+import { getPoETradeMinLinks } from '../src/lib/poeTrade.js'
+import { normalizeSkillGem } from '../src/lib/poeNinjaGem.js'
 
 const API_BASE = 'https://poe.ninja/poe1/api/economy'
 const LEAGUES_URL = `${API_BASE}/leagues`
 const CACHE_TTL_MS = 5 * 60 * 1000
 const MAX_CACHE_ENTRIES = 128
+const CATEGORY_CACHE_TTL_MS = 5 * 60 * 1000
+const STATIC_ITEM_CACHE_TTL_MS = 24 * 60 * 60 * 1000
+const REPOE_ITEMS_URL = 'https://raw.githubusercontent.com/brather1ng/RePoE/master/RePoE/data/base_items.min.json'
+const MAX_CATEGORY_CACHE_ENTRIES = 64
 const cache = new Map()
+const categoryResponseCache = new Map()
+const categoryResponseInFlight = new Map()
+let staticItemDetailsCache = null
+let staticItemDetailsExpiresAt = 0
+let staticItemDetailsRequest = null
 
 const DIVINATION_CARD_ART_FILENAMES = {
   'alone-in-the-darkness': 'AloneintheDarkness',
@@ -75,6 +86,29 @@ function cacheSet(key, entry) {
   }
 }
 
+function getCachedCategoryResponse(key) {
+  const entry = categoryResponseCache.get(key)
+  if (!entry) return undefined
+  if (entry.expiresAt <= Date.now()) {
+    categoryResponseCache.delete(key)
+    return undefined
+  }
+  categoryResponseCache.delete(key)
+  categoryResponseCache.set(key, entry)
+  return entry.data
+}
+
+function cacheCategoryResponse(key, data) {
+  categoryResponseCache.delete(key)
+  categoryResponseCache.set(key, {
+    data,
+    expiresAt: Date.now() + CATEGORY_CACHE_TTL_MS,
+  })
+  while (categoryResponseCache.size > MAX_CATEGORY_CACHE_ENTRIES) {
+    categoryResponseCache.delete(categoryResponseCache.keys().next().value)
+  }
+}
+
 async function fetchJson(url, validate) {
   const response = await fetch(url, {
     headers: { 'User-Agent': 'PoeStash local market proxy/0.1.0' },
@@ -122,6 +156,47 @@ function endpointUrl(endpoint, league, type) {
   return url.toString()
 }
 
+async function getCategoryData(category, league) {
+  const alternateEndpoints = category.endpoint === 'item'
+    ? ['exchange', 'currency']
+    : ['item', 'currency']
+  const leagues = league === 'Standard' ? ['Standard'] : [league, 'Standard']
+  const candidates = [
+    { league, endpoint: category.endpoint },
+    ...leagues.slice(1).map((sourceLeague) => ({ league: sourceLeague, endpoint: category.endpoint })),
+    ...leagues.flatMap((sourceLeague) => alternateEndpoints.map((endpoint) => ({
+      league: sourceLeague,
+      endpoint,
+    }))),
+  ]
+  let emptyResult
+  let lastError
+
+  for (const candidate of candidates) {
+    try {
+      const data = await getCachedJson(
+        endpointUrl(candidate.endpoint, candidate.league, category.type),
+      )
+      if (Array.isArray(data.lines) && data.lines.length > 0) {
+        return { ...candidate, data, triedLeagues: leagues }
+      }
+      emptyResult ||= { ...candidate, data, triedLeagues: leagues }
+    } catch (error) {
+      if (!/returned HTTP 404\b/.test(error.message)) {
+        lastError = error
+      }
+    }
+  }
+
+  if (lastError && !emptyResult) throw lastError
+  return emptyResult || {
+    league,
+    endpoint: category.endpoint,
+    data: { lines: [], items: [] },
+    triedLeagues: leagues,
+  }
+}
+
 function poeNinjaImage(path) {
   if (typeof path !== 'string' || !path) return null
   try {
@@ -155,6 +230,175 @@ function toItem(name, category, priceChaos, change, identity = name, details = {
   }
 }
 
+function normalizeModifiers(modifiers) {
+  if (!Array.isArray(modifiers)) return []
+  return modifiers
+    .map((modifier) => {
+      if (typeof modifier === 'string') return modifier
+      if (typeof modifier?.text !== 'string' || !modifier.text.trim()) return null
+      return {
+        ...modifier,
+        text: modifier.text,
+      }
+    })
+    .filter(Boolean)
+}
+
+function normalizeDetailLines(value) {
+  if (typeof value === 'string') return value.trim() ? [value] : []
+  if (!Array.isArray(value)) return []
+  return value
+    .map((line) => {
+      if (typeof line === 'string') return line
+      if (line && typeof line === 'object') return { ...line }
+      return null
+    })
+    .filter(Boolean)
+}
+
+function getDetailFields(source) {
+  const fields = {}
+  for (const key of [
+    'properties',
+    'requirements',
+    'secDescrText',
+    'descrText',
+    'description',
+    'details',
+    'flavourText',
+  ]) {
+    if (typeof source?.[key] === 'string' || Array.isArray(source?.[key])) {
+      fields[key] = normalizeDetailLines(source[key])
+    }
+  }
+  return fields
+}
+
+function getScalarDetailFields(source) {
+  const fields = {}
+  for (const key of [
+    'levelRequired',
+    'requiredLevel',
+    'requiredStrength',
+    'requiredDexterity',
+    'requiredIntelligence',
+    'stackSize',
+    'mapTier',
+    'gemLevel',
+    'gemQuality',
+    'quality',
+    'energyShield',
+    'armour',
+    'evasion',
+    'ward',
+    'movementSpeed',
+    'physicalDamage',
+    'attacksPerSecond',
+    'criticalStrikeChance',
+  ]) {
+    if (source?.[key] != null) fields[key] = source[key]
+  }
+  return fields
+}
+
+function getStaticItemName(entry) {
+  return typeof entry?.name === 'string'
+    ? entry.name.trim().toLowerCase()
+    : ''
+}
+
+function toStaticItemDetailsMap(payload) {
+  const entries = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === 'object'
+      ? Object.values(payload)
+      : []
+  const details = new Map()
+  for (const entry of entries) {
+    const name = getStaticItemName(entry)
+    if (name) details.set(name, entry)
+  }
+  return details
+}
+
+async function getStaticItemDetails() {
+  if (staticItemDetailsCache && staticItemDetailsExpiresAt > Date.now()) return staticItemDetailsCache
+  if (staticItemDetailsRequest) return staticItemDetailsRequest
+
+  staticItemDetailsRequest = fetch(REPOE_ITEMS_URL, {
+    headers: { 'User-Agent': 'PoEStash local market proxy/0.1.0' },
+    signal: AbortSignal.timeout(10_000),
+  })
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`RePoE returned HTTP ${response.status}.`)
+      return toStaticItemDetailsMap(await response.json())
+    })
+    .catch(() => new Map())
+    .then((details) => {
+      staticItemDetailsCache = details
+      staticItemDetailsExpiresAt = Date.now() + STATIC_ITEM_CACHE_TTL_MS
+      return details
+    })
+    .finally(() => {
+      staticItemDetailsRequest = null
+    })
+
+  return staticItemDetailsRequest
+}
+
+function mergeStaticItemDetails(item, staticDetails) {
+  const staticItem = staticDetails.get(getStaticItemName(item))
+  if (!staticItem) return item
+  const merged = { ...item }
+  for (const key of ['properties', 'requirements', 'descrText', 'description']) {
+    if ((!Array.isArray(merged[key]) || merged[key].length === 0) && Array.isArray(staticItem[key])) {
+      merged[key] = staticItem[key]
+    }
+  }
+  if ((!Array.isArray(merged.explicitModifiers) || merged.explicitModifiers.length === 0)
+    && Array.isArray(staticItem.explicitModifiers || staticItem.explicitMods)) {
+    merged.explicitModifiers = staticItem.explicitModifiers || staticItem.explicitMods
+  }
+  if ((!Array.isArray(merged.implicitModifiers) || merged.implicitModifiers.length === 0)
+    && Array.isArray(staticItem.implicitModifiers || staticItem.implicitMods)) {
+    merged.implicitModifiers = staticItem.implicitModifiers || staticItem.implicitMods
+  }
+  return merged
+}
+
+function normalizeTradeInfo(tradeInfo) {
+  if (!Array.isArray(tradeInfo)) return []
+  return tradeInfo
+    .map((entry) => entry?.mod)
+    .filter((mod) => typeof mod === 'string')
+    .map((mod) => ({ mod }))
+}
+
+function normalizeForbiddenMetadata(line) {
+  const metadata = line?.metadata && typeof line.metadata === 'object' ? line.metadata : {}
+  return {
+    ...(Object.keys(metadata).length ? { metadata } : {}),
+    ...(typeof metadata.baseClass === 'string' ? { baseClass: metadata.baseClass } : {}),
+    ...(typeof metadata.ascendancy === 'string' ? { ascendancy: metadata.ascendancy } : {}),
+    ...(typeof metadata.passiveName === 'string' ? { passiveName: metadata.passiveName } : {}),
+  }
+}
+
+function normalizeVariantTags(variant) {
+  if (Array.isArray(variant)) return variant.filter((tag) => typeof tag === 'string' && tag.trim())
+  return typeof variant === 'string'
+    ? variant.split(',').map((tag) => tag.trim()).filter(Boolean)
+    : []
+}
+
+function normalizeCurrencyUnit(value) {
+  if (typeof value !== 'string') return null
+  const unit = value.toLowerCase()
+  if (unit.includes('divine')) return 'divine'
+  if (unit.includes('chaos')) return 'chaos'
+  return null
+}
+
 function normalizeExchange(line, itemById, primary, divineToChaos, category) {
   const item = itemById.get(line.id)
   if (!item || !Number.isFinite(line.primaryValue)) return null
@@ -164,13 +408,35 @@ function normalizeExchange(line, itemById, primary, divineToChaos, category) {
     : line.primaryValue
   const icon = poeNinjaImage(item.image || item.icon)
     || (category === 'Divination Cards' ? divinationCardImage(item.detailsId || item.id || line.id) : null)
+  const minLinks = getPoETradeMinLinks({
+    name: item.name,
+    links: item.links,
+    sockets: item.sockets,
+  })
   return toItem(item.name, category, priceChaos, line.sparkline?.totalChange, line.id, {
+    ...getDetailFields(item),
+    ...getDetailFields(line),
+    ...getScalarDetailFields(item),
+    ...getScalarDetailFields(line),
     icon,
+    tradeId: typeof item.id === 'string' ? item.id : '',
     variant: typeof item.variant === 'string' ? item.variant : '',
-    links: Number.isFinite(item.links) ? item.links : 0,
+    variantTags: normalizeVariantTags(item.variant),
+    explicitModifiers: normalizeModifiers(item.explicitModifiers),
+    implicitModifiers: normalizeModifiers(item.implicitModifiers),
+    mutatedModifiers: normalizeModifiers(item.mutatedModifiers),
+    tradeInfo: normalizeTradeInfo(item.tradeInfo),
+    links: minLinks ?? 0,
+    minLinks,
+    ...(item.sockets !== undefined ? { sockets: item.sockets } : {}),
     baseType: typeof item.baseType === 'string' ? item.baseType : '',
+    ...normalizeForbiddenMetadata(item),
     sparkline: Array.isArray(line.sparkline?.data) ? line.sparkline.data : [],
     volumePerHour: Number.isFinite(line.volumePrimaryValue) ? line.volumePrimaryValue : null,
+    volumeCurrency: normalizeCurrencyUnit(primary)
+      || normalizeCurrencyUnit(line.volumeCurrency)
+      || normalizeCurrencyUnit(line.maxVolumeCurrency)
+      || 'chaos',
     maxVolumeCurrency: typeof line.maxVolumeCurrency === 'string' ? line.maxVolumeCurrency : null,
     maxVolumeRate: Number.isFinite(line.maxVolumeRate) ? line.maxVolumeRate : null,
   })
@@ -191,8 +457,14 @@ function getDivineToChaos(data) {
   return divineValue / chaosValue
 }
 
-function normalizeItem(line, category) {
+function normalizeItem(line, category, primary) {
   if (!line.name || !Number.isFinite(line.chaosValue)) return null
+  const gemDetails = category === 'Skill Gems' ? normalizeSkillGem(line) : null
+  const minLinks = getPoETradeMinLinks({
+    name: line.name,
+    links: line.links,
+    sockets: line.sockets,
+  })
   return toItem(
     line.name,
     category,
@@ -200,16 +472,39 @@ function normalizeItem(line, category) {
     line.sparkLine?.totalChange,
     line.id ?? line.detailsId ?? line.name,
     {
+      ...getDetailFields(line),
+      ...getScalarDetailFields(line),
       icon: poeNinjaImage(line.icon || line.image),
+      detailsId: typeof line.detailsId === 'string' ? line.detailsId : '',
       variant: typeof line.variant === 'string' ? line.variant : '',
-      links: Number.isFinite(line.links) ? line.links : 0,
+      variantTags: normalizeVariantTags(line.variantTags ?? line.variant),
+      explicitModifiers: normalizeModifiers(line.explicitModifiers),
+      implicitModifiers: normalizeModifiers(line.implicitModifiers),
+      mutatedModifiers: normalizeModifiers(line.mutatedModifiers),
+      tradeInfo: normalizeTradeInfo(line.tradeInfo),
+      links: minLinks ?? 0,
+      minLinks,
+      ...(line.sockets !== undefined ? { sockets: line.sockets } : {}),
       baseType: typeof line.baseType === 'string' ? line.baseType : '',
+      ...normalizeForbiddenMetadata(line),
+      ...(gemDetails || {}),
+      levelRequired: Number.isFinite(line.levelRequired)
+        ? line.levelRequired
+        : Number.isFinite(line.itemLevel)
+          ? line.itemLevel
+          : Number.isFinite(line.level)
+            ? line.level
+            : null,
       sparkline: Array.isArray(line.sparkLine?.data)
         ? line.sparkLine.data
         : Array.isArray(line.sparkline?.data)
           ? line.sparkline.data
           : [],
       volumePerHour: Number.isFinite(line.volumePrimaryValue) ? line.volumePrimaryValue : null,
+      volumeCurrency: normalizeCurrencyUnit(line.volumeCurrency)
+        || normalizeCurrencyUnit(line.maxVolumeCurrency)
+        || normalizeCurrencyUnit(primary)
+        || 'chaos',
       maxVolumeCurrency: typeof line.maxVolumeCurrency === 'string' ? line.maxVolumeCurrency : null,
       maxVolumeRate: Number.isFinite(line.maxVolumeRate) ? line.maxVolumeRate : null,
     },
@@ -266,39 +561,94 @@ export async function getMarketRate(league) {
   }
 }
 
-export async function getMarketCategory(league, categoryId, { refresh = false } = {}) {
-  const category = MARKET_CATEGORIES.find((entry) => entry.id === categoryId)
-  if (!category) return null
-  if (refresh) clearLeagueCache(league)
-
-  const [rate, data] = await Promise.all([
+async function fetchMarketCategory(league, category) {
+  const [rate, source] = await Promise.all([
     getMarketRate(league),
-    category.id === 'currency'
-      ? getCachedJson(endpointUrl('exchange', league, 'Currency'))
-      : getCachedJson(endpointUrl(category.endpoint, league, category.type)),
+    getCategoryData(category, league),
   ])
-  const itemById = new Map((data.items || []).map((item) => [item.id, item]))
-  const items = category.endpoint === 'exchange'
+  const { data, endpoint, league: dataLeague } = source
+  const sourceRate = dataLeague === league ? rate : await getMarketRate(dataLeague)
+  const staticDetails = endpoint === 'exchange' && ['Currency', 'Fragments'].includes(category.label)
+    ? await getStaticItemDetails()
+    : new Map()
+  const itemById = new Map((data.items || []).map((item) => [
+    item.id,
+    mergeStaticItemDetails(item, staticDetails),
+  ]))
+  const items = endpoint === 'exchange'
     ? data.lines.map((line) => normalizeExchange(
       line,
       itemById,
       data.core?.primary,
-      rate.divineToChaos,
+      sourceRate.divineToChaos,
       category.label,
     ))
-    : data.lines.map((line) => normalizeItem(line, category.label))
+    : data.lines.map((line) => normalizeItem(line, category.label, data.core?.primary))
 
   return {
     ...rate,
     categoryId: category.id,
     category: category.label,
+    dataLeague,
+    isFallbackData: dataLeague !== league,
+    dataEndpoint: endpoint,
+    fallbackTriedLeagues: source.triedLeagues,
     items: sortByPrice(items, rate.divineToChaos),
+  }
+}
+
+export async function getMarketCategory(league, categoryId, { refresh = false } = {}) {
+  const category = MARKET_CATEGORIES.find((entry) => entry.id === categoryId)
+  if (!category) return null
+
+  const key = JSON.stringify([league, categoryId])
+  if (refresh) {
+    const sourceLeagues = league === 'Standard' ? ['Standard'] : [league, 'Standard']
+    const categoryKeys = sourceLeagues.map((sourceLeague) => JSON.stringify([sourceLeague, categoryId]))
+    for (const categoryKey of categoryKeys) {
+      categoryResponseCache.delete(categoryKey)
+      categoryResponseInFlight.delete(categoryKey)
+    }
+    clearCategorySourceCache(league, category)
+  }
+
+  const cached = refresh ? undefined : getCachedCategoryResponse(key)
+  if (cached) return cached
+  const inFlight = categoryResponseInFlight.get(key)
+  if (inFlight) return inFlight
+
+  const request = fetchMarketCategory(league, category)
+  categoryResponseInFlight.set(key, request)
+  try {
+    const result = await request
+    if (categoryResponseInFlight.get(key) === request) {
+      cacheCategoryResponse(key, result)
+    }
+    return result
+  } finally {
+    if (categoryResponseInFlight.get(key) === request) {
+      categoryResponseInFlight.delete(key)
+    }
   }
 }
 
 function clearLeagueCache(league) {
   for (const key of cache.keys()) {
     if (new URL(key).searchParams.get('league') === league) cache.delete(key)
+  }
+}
+
+function clearCategorySourceCache(league, category) {
+  const sourceLeagues = league === 'Standard' ? ['Standard'] : [league, 'Standard']
+  const sourceEndpoints = category.endpoint === 'item'
+    ? ['item', 'exchange', 'currency']
+    : ['exchange', 'item', 'currency']
+
+  for (const sourceLeague of sourceLeagues) {
+    cache.delete(endpointUrl('exchange', sourceLeague, 'Currency'))
+    for (const endpoint of sourceEndpoints) {
+      cache.delete(endpointUrl(endpoint, sourceLeague, category.type))
+    }
   }
 }
 
@@ -315,7 +665,13 @@ export async function getMarketSummary(league, { refresh = false } = {}) {
     [...EXCHANGE_GROUPS.filter((group) => group.type !== 'Currency'), ...ITEM_GROUPS].map(async (group) => {
       const data = await getCachedJson(endpointUrl(group.endpoint, league, group.type))
       if (group.endpoint === 'exchange') {
-        const itemById = new Map((data.items || []).map((item) => [item.id, item]))
+        const staticDetails = ['Currency', 'Fragments'].includes(group.label)
+          ? await getStaticItemDetails()
+          : new Map()
+        const itemById = new Map((data.items || []).map((item) => [
+          item.id,
+          mergeStaticItemDetails(item, staticDetails),
+        ]))
         return {
           label: group.label,
           items: data.lines.map((line) => normalizeExchange(
@@ -330,15 +686,19 @@ export async function getMarketSummary(league, { refresh = false } = {}) {
 
       return {
         label: group.label,
-        items: data.lines.map((line) => normalizeItem(line, group.label)),
+        items: data.lines.map((line) => normalizeItem(line, group.label, data.core?.primary)),
       }
     }),
   )
 
   const groupedItems = new Map()
+  const currencyStaticDetails = await getStaticItemDetails()
   const currencyItems = currencyData.lines.map((line) => normalizeExchange(
     line,
-    new Map((currencyData.items || []).map((item) => [item.id, item])),
+    new Map((currencyData.items || []).map((item) => [
+      item.id,
+      mergeStaticItemDetails(item, currencyStaticDetails),
+    ])),
     currencyData.core?.primary,
     divineToChaos,
     'Currency',

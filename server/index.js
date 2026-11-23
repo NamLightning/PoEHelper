@@ -11,7 +11,6 @@ import {
   getAccountConfigStatus,
   saveAccountConfig,
 } from './poeAccount.js'
-import { getWikiItemDetails } from './poeWiki.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3001
@@ -31,36 +30,54 @@ app.get('/api/health', (_request, response) => {
   response.json({ status: 'ok' })
 })
 
-app.get('/api/wiki/item', async (request, response) => {
-  const name = typeof request.query.name === 'string' ? request.query.name.trim() : ''
-  const baseType = typeof request.query.baseType === 'string' ? request.query.baseType.trim() : ''
-  const variant = typeof request.query.variant === 'string' ? request.query.variant.trim() : ''
-  const invalidValue = (value) => value.length > 160 || /[\u0000-\u001f\u007f]/.test(value)
-  if (!name || invalidValue(name) || invalidValue(baseType) || invalidValue(variant)) {
-    return response.status(400).json({
-      error: 'Provide an item name and optional base type and variant, each no longer than 160 characters.',
-      code: 'INVALID_ITEM_NAME',
-    })
-  }
-
+app.get('/api/trade/stats', async (_request, response) => {
   try {
-    const item = await getWikiItemDetails(name, { baseType, variant })
-    if (!item) {
-      return response.status(404).json({
-        error: `No matching PoE Wiki item was found for "${name}".`,
-        code: 'WIKI_ITEM_NOT_FOUND',
-      })
+    const upstream = await fetch('https://www.pathofexile.com/api/trade/data/stats', {
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'PoEHelper/0.1.0 local market client',
+      },
+    })
+    if (!upstream.ok) {
+      throw new Error(`Path of Exile Trade returned HTTP ${upstream.status}.`)
     }
-    response.json(item)
+
+    const payload = await upstream.json()
+    const statGroups = Array.isArray(payload?.result)
+      ? payload.result.filter((group) => {
+          const isImbuedGroup = String(group?.label || '').toLowerCase() === 'imbued'
+            || group?.id === 'imbued'
+            || (Array.isArray(group?.entries) && group.entries.some((entry) => (
+              typeof entry?.id === 'string' && entry.id.startsWith('imbued.stat_')
+            )))
+          return ['explicit', 'implicit', 'enchant', 'pseudo'].includes(group?.id) || isImbuedGroup
+        })
+      : []
+    if (!statGroups.some((group) => Array.isArray(group.entries))) {
+      throw new Error('Path of Exile Trade response did not contain stat entries.')
+    }
+
+    response.json({
+      result: statGroups.map((group) => ({
+        ...group,
+        entries: Array.isArray(group.entries)
+          ? group.entries.filter((entry) => (
+            typeof entry?.id === 'string'
+              && (entry.id.startsWith(`${group.id}.`) || entry.id.startsWith('imbued.stat_'))
+            && typeof entry.text === 'string'
+          ))
+          : [],
+      })),
+    })
   } catch (error) {
-    console.error(`PoE Wiki item lookup failed for "${name}":`, error)
+    console.error('PoE Trade stats request failed:', error)
     response.status(502).json({
-      error: 'Could not load item details from PoE Wiki.',
-      details: error instanceof Error ? error.message : 'Unknown upstream error.',
-      code: 'WIKI_REQUEST_FAILED',
+      error: 'Could not load explicit stat filters from Path of Exile Trade.',
+      code: 'POE_TRADE_STATS_REQUEST_FAILED',
     })
   }
 })
+
 
 app.get('/api/account/config', async (_request, response) => {
   try {
@@ -184,6 +201,4 @@ app.get('/api/market/summary', async (request, response) => {
   }
 })
 
-app.listen(port, '127.0.0.1', () => {
-  console.log(`Market API listening on http://127.0.0.1:${port}`)
-})
+app.listen(port, '127.0.0.1')

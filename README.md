@@ -17,6 +17,8 @@ Lệnh này chạy frontend Vite tại http://localhost:5173 và backend proxy t
 
 Trang Market lấy dữ liệu PoE 1 từ poe.ninja. League Challenge hiện tại được tự chọn; dropdown liệt kê các league PoE 1 đang hoạt động. Thanh danh mục có đủ 48 loại vật phẩm trong các nhóm General, Equipment & gems, Atlas và Crafting; dữ liệu mỗi loại chỉ được tải khi chọn. Chọn Refresh để xóa cache league đang xem và lấy giá mới. API cache dữ liệu trong RAM tối đa 5 phút. Giá là ước tính của economy overview, không phải listing trực tiếp.
 
+Mỗi dòng Market có nút pill **Trade ⇄** mở trang trade chính thức theo league hiện tại. Bulk Exchange để `have: []` và đặt vật phẩm vào `want`; vật phẩm search dùng đúng tên hiển thị, cùng base type và socket links nếu có.
+
 Di chuột hoặc focus tên item trong bảng Market để xem tooltip từ PoE Wiki. Backend ưu tiên tên gốc, rồi tên đã bỏ tiền tố biến thể, base type và kết quả tìm kiếm Wiki; tooltip hiển thị trang Wiki khớp cùng các modifier Foulborn liên quan nếu có. Dữ liệu Cargo được cache trong RAM 24 giờ (kết quả không tìm thấy cache 5 phút), còn poe.ninja là phương án dự phòng.
 
 Mở **Account & Character** từ hồ sơ góc trên bên phải hoặc **Settings** ở sidebar để nhập Account Name#Tag và POESESSID, tải/chọn nhân vật. Cấu hình lưu trong `config.local.json` (đã được gitignore); biến môi trường `POE_ACCOUNT_NAME` và `POESESSID` cũng được hỗ trợ và được ưu tiên hơn file local. Cookie chỉ được dùng bởi backend proxy local gọi API chính thức của Path of Exile; không chia sẻ cookie này. League của nhân vật được đồng bộ với lựa chọn League ở trang Market.

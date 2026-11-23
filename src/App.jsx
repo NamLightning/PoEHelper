@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react'
-import Sidebar from './components/Sidebar'
 import Topbar from './components/Topbar'
 import WealthChartCard from './components/WealthChartCard'
 import GoalCard from './components/GoalCard'
 import MethodGrid from './components/MethodGrid'
 import AccountSettingsModal from './components/AccountSettingsModal'
-import { BuildView, CraftView, MarketView, StashView, ToolsView } from './components/SectionViews'
+import { BuildView, MarketView, StashView } from './components/SectionViews'
 import { CONTEXTS, createSnapshot, refreshSnapshot, totalOf } from './data/mock'
 
 export default function App() {
   const [nav, setNav] = useState('home')
   const [query, setQuery] = useState('')
   const [contextId, setContextId] = useState('covens')
-  const [theme, setTheme] = useState('night')
   const [goalTab, setGoalTab] = useState('goal')
   const [syncedAt, setSyncedAt] = useState(() => Date.now() - 12 * 60 * 1000)
   const [now, setNow] = useState(() => Date.now())
@@ -33,10 +31,6 @@ export default function App() {
     ...point,
     value: Math.round(point.value * context.factor * 10) / 10,
   }))
-
-  useEffect(() => {
-    document.documentElement.dataset.tone = theme
-  }, [theme])
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 15000)
@@ -117,26 +111,17 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <Sidebar
-        active={nav}
-        onChange={setNav}
-        onOpenSettings={() => setAccountSettingsOpen(true)}
-      />
-      <div className="flex min-w-0 flex-1 flex-col">
+    <div className="relative min-h-screen bg-transparent text-[var(--text)]">
         <Topbar
+          active={nav}
           contextId={contextId}
           onContext={setContextId}
-          query={query}
-          onQuery={setQuery}
           onNavigate={setNav}
-          theme={theme}
-          onToggleTheme={() => setTheme((value) => (value === 'ember' ? 'night' : 'ember'))}
           accountName={accountName}
           selectedCharacter={selectedCharacter}
           onOpenAccount={() => setAccountSettingsOpen(true)}
         />
-        <main className="min-w-0 flex-1 px-6 pb-10 pt-6 lg:px-8">
+        <main className="mx-auto min-w-0 w-full max-w-[1600px] px-4 pb-10 pt-20 sm:px-6 lg:px-8">
           {nav === 'home' ? (
             <>
               <header className="mb-5">
@@ -174,31 +159,26 @@ export default function App() {
               </div>
             </>
           ) : null}
-          {nav === 'stash' ? <StashView query={query} factor={context.factor} /> : null}
-          {nav === 'market' ? (
-            <MarketView
+          {nav === 'stash' ? (
+            <StashView
               query={query}
-              selectedLeague={selectedLeague}
-              onLeagueChange={setSelectedLeague}
-              onNavigate={setNav}
+              league={marketRate?.league}
+              divineToChaos={marketRate?.divineToChaos}
             />
           ) : null}
-          {nav === 'currency' ? (
-            <>
-              <header className="mb-5">
-                <h1 className="text-[28px] font-semibold tracking-tight">Make Currency</h1>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  Strategies priced in {context.priceLabel}. Filter the grid or search from the top bar.
-                </p>
-              </header>
-              <MethodGrid query={query} factor={context.factor} />
-            </>
+          {nav === 'market' ? (
+            <div className="mx-auto w-full max-w-[1320px] px-4">
+              <MarketView
+                query={query}
+                selectedLeague={selectedLeague}
+                onLeagueChange={setSelectedLeague}
+                onClearQuery={() => setQuery('')}
+                onNavigate={setNav}
+              />
+            </div>
           ) : null}
-          {nav === 'tools' ? <ToolsView query={query} /> : null}
-          {nav === 'craft' ? <CraftView query={query} factor={context.factor} /> : null}
           {nav === 'build' ? <BuildView query={query} /> : null}
         </main>
-      </div>
       <AccountSettingsModal
         open={accountSettingsOpen}
         onClose={() => setAccountSettingsOpen(false)}

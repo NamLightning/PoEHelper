@@ -80,24 +80,6 @@ export const MARKET = [
   { id: 'cluster', name: 'Large Cluster', tag: 'Crafting', price: 1.8, change: -0.3, note: 'ilvl 84 bases' },
 ]
 
-export const TOOLS = [
-  { id: 'regex', name: 'Stash regex', note: 'Highlight priced stacks over 20 chaos', tag: 'Stash' },
-  { id: 'bulk', name: 'Bulk price check', note: 'Reprice the currency tab from the last sync', tag: 'Market' },
-  { id: 'hideout', name: 'Hideout timer', note: 'Track map sessions against the div/h line', tag: 'Session' },
-  { id: 'trade', name: 'Trade whisper log', note: 'Local mock of the last twelve listings', tag: 'Market' },
-  { id: 'loot', name: 'Loot filter diff', note: 'Compare strict vs very-strict drops', tag: 'Build' },
-  { id: 'awakener', name: 'Awakener checklist', note: 'Four voidstones and favourite map slots', tag: 'Bossing' },
-]
-
-export const CRAFTS = [
-  { id: 'frenzy', name: '+1 frenzy belt lock', tag: 'Crafting', note: 'Fossils then lock suffixes', cost: 4.5 },
-  { id: 'cluster', name: 'Chaos cluster', tag: 'Crafting', note: '35% effect, chaos res, life', cost: 2.2 },
-  { id: 'boots', name: 'Tailwind boots', tag: 'Crafting', note: 'Essence spam then Eldritch', cost: 6.8 },
-  { id: 'shield', name: 'Recover shield', tag: 'Crafting', note: 'Deafening envy, bench life', cost: 1.4 },
-  { id: 'flask', name: 'Mageblood flasks', tag: 'Crafting', note: '25% effect prefixes, bleed and curse', cost: 3.1 },
-  { id: 'jewel', name: 'Watchers eye', tag: 'Bossing', note: 'Hatred crit, grace spell suppress', cost: 18 },
-]
-
 export const BUILD_ITEMS = [
   { id: 'helm', name: 'Crown of the Inward Eye', tag: 'Gear', note: 'Life and aura effect' },
   { id: 'weapon', name: 'Void Battery', tag: 'Gear', note: 'Power charge stacking' },
@@ -147,8 +129,6 @@ export function searchAll(query) {
     [METHODS, 'currency', 'Strategy'],
     [STASH_TABS, 'stash', 'Stash'],
     [MARKET, 'market', 'Market'],
-    [TOOLS, 'tools', 'Tool'],
-    [CRAFTS, 'craft', 'Craft'],
     [BUILD_ITEMS, 'build', 'Build'],
   ]
 

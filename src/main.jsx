@@ -6,10 +6,13 @@ import '@fontsource/inter/600.css'
 import '@fontsource/outfit/500.css'
 import '@fontsource/outfit/600.css'
 import App from './App.jsx'
+import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AppErrorBoundary>
+      <App />
+    </AppErrorBoundary>
   </StrictMode>,
 )
