@@ -27,7 +27,17 @@ export async function fetchStashTabs(accountName, league) {
   const normalizedLeague = String(league || 'Standard').trim()
   const query = new URLSearchParams({ accountName: normalizedAccountName, realm: 'pc', league: normalizedLeague, tabs: '1' })
   const result = await get(`/get-stash-items?${query.toString()}`)
-  const tabs = (result.tabs || []).map((tab, index) => ({ ...tab, index, id: String(index), label: tab.n || tab.name || `Tab ${index + 1}`, kind: tab.type || 'Normal', color: tab.colour || tab.color || '#8b7355' }))
+  const tabs = (result.tabs || []).map((tab, index) => ({
+    ...tab,
+    index: Number.isInteger(tab.i) ? tab.i : index,
+    id: String(tab.i ?? index),
+    label: tab.n || tab.name || `Tab ${index + 1}`,
+    name: tab.n || tab.name || `Tab ${index + 1}`,
+    type: tab.type || 'NormalStash',
+    kind: tab.type || 'NormalStash',
+    colour: tab.colour ?? null,
+    color: tab.colour ?? null,
+  }))
   const cached = readStashCache()
   writeStashCache({ ...cached, accountName: normalizedAccountName, league: normalizedLeague, tabs })
   return tabs

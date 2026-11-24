@@ -33,8 +33,8 @@ async function readLocalConfig() {
 
 async function readAccountCredentials() {
   const localConfig = await readLocalConfig()
-  const accountName = process.env.POE_ACCOUNT_NAME || localConfig.POE_ACCOUNT_NAME || ''
-  const sessionId = process.env.POESESSID || localConfig.POESESSID || ''
+  const accountName = process.env.POE_ACCOUNT_NAME || localConfig.POE_ACCOUNT_NAME || localConfig.accountName || ''
+  const sessionId = process.env.POESESSID || localConfig.POESESSID || localConfig.poesessid || localConfig.poeSessId || ''
 
   return {
     accountName: typeof accountName === 'string' ? accountName.trim() : '',
@@ -63,6 +63,15 @@ async function requireAccountCredentials() {
     )
   }
   return credentials
+}
+
+export async function getStashCredentials() {
+  const credentials = await requireAccountCredentials()
+  return {
+    accountName: credentials.accountName.split('#')[0].trim(),
+    rawAccountName: credentials.accountName,
+    sessionId: credentials.sessionId,
+  }
 }
 
 export async function getAccountConfigStatus() {

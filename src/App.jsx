@@ -6,6 +6,14 @@ import MethodGrid from './components/MethodGrid'
 import AccountSettingsModal from './components/AccountSettingsModal'
 import { BuildView, MarketView, StashView } from './components/SectionViews'
 import { CONTEXTS, createSnapshot, refreshSnapshot, totalOf } from './data/mock'
+import { readStashCache, writeStashCache } from './services/stashService'
+
+function cacheTimestamp(value) {
+  const numeric = Number(value)
+  if (Number.isFinite(numeric) && numeric > 0) return numeric
+  const parsed = Date.parse(String(value || ''))
+  return Number.isFinite(parsed) ? parsed : 0
+}
 
 export default function App() {
   const [nav, setNav] = useState('home')
@@ -22,9 +30,17 @@ export default function App() {
   const [accountName, setAccountName] = useState('')
   const [selectedCharacter, setSelectedCharacter] = useState(null)
   const [selectedLeague, setSelectedLeague] = useState('')
+  const [stashItems, setStashItems] = useState(() => readStashCache().pricedItems || [])
+  const [stashTabs, setStashTabs] = useState(() => readStashCache().tabs || [])
+  const [selectedTabs, setSelectedTabs] = useState(() => readStashCache().selectedTabs || [])
+  const [lastStashSyncedAt, setLastStashSyncedAt] = useState(() => {
+    const cache = readStashCache()
+    return cacheTimestamp(cache.lastSyncedAt || cache.syncedAt)
+  })
+  const [stashSyncStatusText, setStashSyncStatusText] = useState(() => readStashCache().syncStatusText || '')
 
   const context = CONTEXTS.find((item) => item.id === contextId) ?? CONTEXTS[2]
-  const activeLeague = marketRate?.league || selectedCharacter?.league || 'Standard'
+  const activeLeague = selectedCharacter?.league || selectedLeague || marketRate?.league || 'Standard'
   const stashAccountName = String(accountName || '').split('#')[0].trim()
   const total = totalOf(snapshot) * context.factor
   const sessionGain = snapshot.sessionGain * context.factor
@@ -33,6 +49,40 @@ export default function App() {
     ...point,
     value: Math.round(point.value * context.factor * 10) / 10,
   }))
+
+  useEffect(() => {
+    writeStashCache({
+      ...readStashCache(),
+      pricedItems: stashItems,
+      tabs: stashTabs,
+      selectedTabs,
+      syncedAt: lastStashSyncedAt,
+      syncStatusText: stashSyncStatusText,
+    })
+  }, [lastStashSyncedAt, selectedTabs, stashItems, stashSyncStatusText, stashTabs])
+
+  useEffect(() => {
+    if (stashItems.length > 0 || stashTabs.length > 0) return undefined
+    let active = true
+    fetch('/api/stash/cache')
+      .then(async (response) => {
+        const cache = await response.json()
+        if (!response.ok) throw new Error(cache.error || `Stash cache returned HTTP ${response.status}.`)
+        return cache
+      })
+      .then((cache) => {
+        if (!active) return
+        if (Array.isArray(cache.items)) setStashItems(cache.items)
+        if (Array.isArray(cache.tabs)) setStashTabs(cache.tabs)
+        if (Array.isArray(cache.selectedTabs)) setSelectedTabs(cache.selectedTabs)
+        if (cache.lastSyncedAt) setLastStashSyncedAt(cacheTimestamp(cache.lastSyncedAt))
+        if (cache.syncStatusText) setStashSyncStatusText(cache.syncStatusText)
+      })
+      .catch((error) => {
+        if (active) console.warn('Could not restore the persisted stash cache:', error)
+      })
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 15000)
@@ -167,6 +217,16 @@ export default function App() {
               league={activeLeague}
               divineToChaos={marketRate?.divineToChaos}
               accountName={stashAccountName}
+              stashItems={stashItems}
+              onStashItems={setStashItems}
+              stashTabs={stashTabs}
+              onStashTabs={setStashTabs}
+              selectedTabs={selectedTabs}
+              onSelectedTabs={setSelectedTabs}
+              lastSyncedAt={lastStashSyncedAt}
+              onLastSyncedAt={setLastStashSyncedAt}
+              syncStatusText={stashSyncStatusText}
+              onSyncStatusText={setStashSyncStatusText}
             />
           ) : null}
           {nav === 'market' ? (

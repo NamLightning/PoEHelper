@@ -53,6 +53,10 @@ const EXCHANGE_GROUPS = [
   { label: 'Fragments', endpoint: 'exchange', type: 'Fragment' },
   { label: 'Divination Cards', endpoint: 'exchange', type: 'DivinationCard' },
   { label: 'Scarabs', endpoint: 'exchange', type: 'Scarab' },
+  { label: 'Essences', endpoint: 'exchange', type: 'Essence' },
+  { label: 'Catalysts', endpoint: 'exchange', type: 'Catalyst' },
+  { label: 'Oils', endpoint: 'exchange', type: 'Oil' },
+  { label: 'Delirium Orbs', endpoint: 'exchange', type: 'DeliriumOrb' },
 ]
 
 const ITEM_GROUPS = [
@@ -61,6 +65,9 @@ const ITEM_GROUPS = [
   { label: 'Unique Items', endpoint: 'item', type: 'UniqueAccessory' },
   { label: 'Unique Items', endpoint: 'item', type: 'UniqueFlask' },
   { label: 'Unique Items', endpoint: 'item', type: 'UniqueJewel' },
+  { label: 'Unique Maps', endpoint: 'item', type: 'UniqueMap' },
+  { label: 'Maps', endpoint: 'item', type: 'Map' },
+  { label: 'Base Types', endpoint: 'item', type: 'BaseType' },
   { label: 'Skill Gems', endpoint: 'item', type: 'SkillGem' },
 ]
 
@@ -447,8 +454,12 @@ function getDivineToChaos(data) {
   const lineById = new Map(data.lines.map((line) => [line.id, line]))
   const divine = itemByName.get('Divine Orb')
   const chaos = itemByName.get('Chaos Orb')
-  const divineValue = divine && lineById.get(divine.id)?.primaryValue
-  const chaosValue = chaos && lineById.get(chaos.id)?.primaryValue
+  const divineLine = divine && lineById.get(divine.id)
+  const chaosLine = chaos && lineById.get(chaos.id)
+  const chaosEquivalent = Number(divineLine?.chaosEquivalent)
+  if (Number.isFinite(chaosEquivalent) && chaosEquivalent > 0) return chaosEquivalent
+  const divineValue = divineLine?.primaryValue
+  const chaosValue = chaosLine?.primaryValue
 
   if (!Number.isFinite(divineValue) || !Number.isFinite(chaosValue) || chaosValue <= 0) {
     return null

@@ -70,7 +70,6 @@ export default function AccountSettingsModal({
   const [saving, setSaving] = useState(false)
   const [loadingCharacters, setLoadingCharacters] = useState(false)
   const [status, setStatus] = useState({ kind: 'idle', message: '' })
-  const [extensionId, setExtensionId] = useState(() => localStorage.getItem('poehelper.extensionId') || '')
 
   useEffect(() => {
     if (!open) {
@@ -226,22 +225,6 @@ export default function AccountSettingsModal({
               >
                 {showSessionId ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
-            </span>
-          </label>
-
-          <label className="block text-sm">
-            Extension ID (optional)
-            <input
-              value={extensionId}
-              onChange={(event) => {
-                setExtensionId(event.target.value.trim())
-                localStorage.setItem('poehelper.extensionId', event.target.value.trim())
-              }}
-              placeholder="Paste the ID from chrome://extensions"
-              className="mt-1.5 w-full rounded-xl border border-[var(--line)] bg-black/20 px-3 py-2.5 text-sm outline-none focus:border-[var(--line-strong)]"
-            />
-            <span className="mt-1.5 block text-xs leading-relaxed text-[var(--muted)]">
-              1. Mở chrome://extensions · 2. Bật Developer mode và Load unpacked thư mục chrome-extension · 3. Copy Extension ID vào đây.
             </span>
           </label>
 
