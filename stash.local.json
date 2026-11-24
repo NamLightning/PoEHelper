@@ -1,0 +1,1559 @@
+{
+  "items": [
+    {
+      "name": "Divine Orb",
+      "tab": "5",
+      "quantity": 5,
+      "priceChaos": 207,
+      "totalChaos": 1035,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lNb2RWYWx1ZXMiLCJzY2FsZSI6MX1d/ec48896769/CurrencyModValues.png",
+      "category": "stash"
+    },
+    {
+      "name": "Stacked Deck",
+      "tab": "5",
+      "quantity": 24,
+      "priceChaos": 3.9,
+      "totalChaos": 93.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvRGl2aW5hdGlvbi9EZWNrIiwic2NhbGUiOjF9XQ/8e83aea79a/Deck.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Alteration",
+      "tab": "5",
+      "quantity": 323,
+      "priceChaos": 0.2,
+      "totalChaos": 64.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxNYWdpYyIsInNjYWxlIjoxfV0/6308fc8ca2/CurrencyRerollMagic.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Augmentation",
+      "tab": "5",
+      "quantity": 182,
+      "priceChaos": 0.2,
+      "totalChaos": 36.4,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lBZGRNb2RUb01hZ2ljIiwic2NhbGUiOjF9XQ/d879c15321/CurrencyAddModToMagic.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Scouring",
+      "tab": "5",
+      "quantity": 54,
+      "priceChaos": 0.8,
+      "totalChaos": 43.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lDb252ZXJ0VG9Ob3JtYWwiLCJzY2FsZSI6MX1d/a0981d67fe/CurrencyConvertToNormal.png",
+      "category": "stash"
+    },
+    {
+      "name": "Chaos Orb",
+      "tab": "5",
+      "quantity": 34,
+      "priceChaos": 1,
+      "totalChaos": 34,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxSYXJlIiwic2NhbGUiOjF9XQ/46a2347805/CurrencyRerollRare.png",
+      "category": "stash"
+    },
+    {
+      "name": "Gemcutter's Prism",
+      "tab": "5",
+      "quantity": 10,
+      "priceChaos": 2.9,
+      "totalChaos": 29,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lHZW1RdWFsaXR5Iiwic2NhbGUiOjF9XQ/dbe9678a28/CurrencyGemQuality.png",
+      "category": "stash"
+    },
+    {
+      "name": "Rogue's Marker",
+      "tab": "5",
+      "quantity": 7554,
+      "priceChaos": 0.003,
+      "totalChaos": 22.66,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvSGVpc3QvSGVpc3RDb2luQ3VycmVuY3kiLCJzY2FsZSI6MX1d/335e66630d/HeistCoinCurrency.png",
+      "category": "stash"
+    },
+    {
+      "name": "Chromatic Orb",
+      "tab": "5",
+      "quantity": 16,
+      "priceChaos": 1.5,
+      "totalChaos": 24,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxTb2NrZXRDb2xvdXJzIiwic2NhbGUiOjF9XQ/19c8ddae20/CurrencyRerollSocketColours.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 1)",
+      "tab": "1",
+      "quantity": 23,
+      "priceChaos": 1,
+      "totalChaos": 23,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzMSIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/764c42d155/MapNumbers1.png",
+      "category": "stash"
+    },
+    {
+      "name": "Arrogance Support - 1/20",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 21,
+      "totalChaos": 21,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0Jsb29kTWFnaWMiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/f90e23f319/BloodMagic.png",
+      "category": "stash"
+    },
+    {
+      "name": "Abyss Thread",
+      "tab": "1",
+      "quantity": 4,
+      "priceChaos": 4.5,
+      "totalChaos": 18,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9BYnlzc1RocmVhZCIsInNjYWxlIjoxfV0/fa2302d9d4/AbyssThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "Nebulis",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 18,
+      "totalChaos": 18,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvV2VhcG9ucy9PbmVIYW5kV2VhcG9ucy9TY2VwdGVycy9TY2VwdHJlT2ZNZW1vcmllcyIsInciOjIsImgiOjMsInNjYWxlIjoxLCJzeW50aGVzaXNlZCI6dHJ1ZX1d/42c37f31d6/SceptreOfMemories.png",
+      "category": "stash"
+    },
+    {
+      "name": "Vaal Orb",
+      "tab": "5",
+      "quantity": 31,
+      "priceChaos": 0.6,
+      "totalChaos": 18.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lWYWFsIiwic2NhbGUiOjF9XQ/593fe2e22e/CurrencyVaal.png",
+      "category": "stash"
+    },
+    {
+      "name": "Glassblower's Bauble",
+      "tab": "5",
+      "quantity": 12,
+      "priceChaos": 1.3,
+      "totalChaos": 15.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lGbGFza1F1YWxpdHkiLCJzY2FsZSI6MX1d/59e57027e5/CurrencyFlaskQuality.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Fusing",
+      "tab": "5",
+      "quantity": 106,
+      "priceChaos": 0.1,
+      "totalChaos": 10.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxTb2NrZXRMaW5rcyIsInNjYWxlIjoxfV0/c5e1959880/CurrencyRerollSocketLinks.png",
+      "category": "stash"
+    },
+    {
+      "name": "Armourer's Scrap",
+      "tab": "5",
+      "quantity": 49,
+      "priceChaos": 0.3,
+      "totalChaos": 14.7,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lBcm1vdXJRdWFsaXR5Iiwic2NhbGUiOjF9XQ/fc4e26afbc/CurrencyArmourQuality.png",
+      "category": "stash"
+    },
+    {
+      "name": "Ancient Orb",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 14,
+      "totalChaos": 14,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQW5jaWVudE9yYiIsInNjYWxlIjoxfV0/83015d0dc9/AncientOrb.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Alchemy",
+      "tab": "5",
+      "quantity": 123,
+      "priceChaos": 0.1,
+      "totalChaos": 12.3,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lVcGdyYWRlVG9SYXJlIiwic2NhbGUiOjF9XQ/0c72cd1d44/CurrencyUpgradeToRare.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Transmutation",
+      "tab": "5",
+      "quantity": 310,
+      "priceChaos": 0.04,
+      "totalChaos": 12.4,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lVcGdyYWRlVG9NYWdpYyIsInNjYWxlIjoxfV0/ded9e8ee63/CurrencyUpgradeToMagic.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Annulment",
+      "tab": "5",
+      "quantity": 2,
+      "priceChaos": 5.7,
+      "totalChaos": 11.4,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQW5udWxsT3JiIiwic2NhbGUiOjF9XQ/0858a418ac/AnnullOrb.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Wretched",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 5.7,
+      "totalChaos": 11.4,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Omen of Brilliance",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 10,
+      "totalChaos": 10,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQXptZXJpL1Zvb2Rvb09tZW5zNEJsdWUiLCJzY2FsZSI6MX1d/0fb19e3399/VoodooOmens4Blue.png",
+      "category": "stash"
+    },
+    {
+      "name": "Summon Stone Golem - 1/20",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 10,
+      "totalChaos": 10,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9Sb2NrR29sZW0iLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/f0d237e67b/RockGolem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Unmaking",
+      "tab": "5",
+      "quantity": 19,
+      "priceChaos": 0.5,
+      "totalChaos": 9.5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUmVncmV0T3JiIiwic2NhbGUiOjF9XQ/beae1b00c7/RegretOrb.png",
+      "category": "stash"
+    },
+    {
+      "name": "Vaal Discipline - 1/0 corrupted",
+      "tab": "~price 1 chaos",
+      "quantity": 1,
+      "priceChaos": 9,
+      "totalChaos": 9,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9WYWFsR2Vtcy9WYWFsRGlzY2lwbGluZSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/abe73da97d/VaalDiscipline.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 3)",
+      "tab": "1",
+      "quantity": 9,
+      "priceChaos": 0.9,
+      "totalChaos": 8.1,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzMyIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/4d6d2331da/MapNumbers3.png",
+      "category": "stash"
+    },
+    {
+      "name": "Exalted Orb",
+      "tab": "5",
+      "quantity": 10,
+      "priceChaos": 0.8,
+      "totalChaos": 8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lBZGRNb2RUb1JhcmUiLCJzY2FsZSI6MX1d/33f2656aea/CurrencyAddModToRare.png",
+      "category": "stash"
+    },
+    {
+      "name": "Bestiary Thread",
+      "tab": "1",
+      "quantity": 4,
+      "priceChaos": 2,
+      "totalChaos": 8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9CZXN0aWFyeVRocmVhZCIsInNjYWxlIjoxfV0/7fd44c21e8/BestiaryThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "Blacksmith's Whetstone",
+      "tab": "5",
+      "quantity": 49,
+      "priceChaos": 0.2,
+      "totalChaos": 9.8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lXZWFwb25RdWFsaXR5Iiwic2NhbGUiOjF9XQ/c9cd72719e/CurrencyWeaponQuality.png",
+      "category": "stash"
+    },
+    {
+      "name": "Enkindling Orb",
+      "tab": "5",
+      "quantity": 7,
+      "priceChaos": 1.1,
+      "totalChaos": 7.7,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbi9GbGFza1BsYXRlIiwic2NhbGUiOjF9XQ/7c1a584a8d/FlaskPlate.png",
+      "category": "stash"
+    },
+    {
+      "name": "Regal Orb",
+      "tab": "5",
+      "quantity": 22,
+      "priceChaos": 0.3,
+      "totalChaos": 6.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lVcGdyYWRlTWFnaWNUb1JhcmUiLCJzY2FsZSI6MX1d/0ded706f57/CurrencyUpgradeMagicToRare.png",
+      "category": "stash"
+    },
+    {
+      "name": "Exotic Coinage",
+      "tab": "3",
+      "quantity": 2,
+      "priceChaos": 3.5,
+      "totalChaos": 7,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbi9CYXJ0ZXJSZWZyZXNoQ3VycmVuY3kiLCJzY2FsZSI6MX1d/0542d74d3c/BarterRefreshCurrency.png",
+      "category": "stash"
+    },
+    {
+      "name": "Atziri's Arsenal",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 7,
+      "totalChaos": 7,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Chance",
+      "tab": "5",
+      "quantity": 9,
+      "priceChaos": 0.8,
+      "totalChaos": 7.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lVcGdyYWRlUmFuZG9tbHkiLCJzY2FsZSI6MX1d/a3f9bf0917/CurrencyUpgradeRandomly.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Calling",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 5.9,
+      "totalChaos": 5.9,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Instilling Orb",
+      "tab": "5",
+      "quantity": 14,
+      "priceChaos": 0.4,
+      "totalChaos": 5.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbi9GbGFza0luamVjdG9yIiwic2NhbGUiOjF9XQ/efc518b1be/FlaskInjector.png",
+      "category": "stash"
+    },
+    {
+      "name": "Orb of Regret",
+      "tab": "5",
+      "quantity": 4,
+      "priceChaos": 1.4,
+      "totalChaos": 5.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lQYXNzaXZlU2tpbGxSZWZ1bmQiLCJzY2FsZSI6MX1d/32d499f562/CurrencyPassiveSkillRefund.png",
+      "category": "stash"
+    },
+    {
+      "name": "Vaal Cold Snap - 1/0 corrupted",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 5,
+      "totalChaos": 5,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9WYWFsR2Vtcy9WYWFsQ29sZFNuYXAiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/5d668a78b1/VaalColdSnap.png",
+      "category": "stash"
+    },
+    {
+      "name": "Wondertrap",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 5,
+      "totalChaos": 5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9Cb290cy9Xb25kZXJ0cmFwIiwidyI6MiwiaCI6Miwic2NhbGUiOjF9XQ/6af24f543f/Wondertrap.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Anvil",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 5,
+      "totalChaos": 5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9BbnZpbCIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/8d05280077/Anvil.png",
+      "category": "stash"
+    },
+    {
+      "name": "Portal Scroll",
+      "tab": "5",
+      "quantity": 94,
+      "priceChaos": 0.05,
+      "totalChaos": 4.7,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lQb3J0YWwiLCJzY2FsZSI6MX1d/d92d3478a0/CurrencyPortal.png",
+      "category": "stash"
+    },
+    {
+      "name": "Offering to the Goddess",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 4.4,
+      "totalChaos": 4.4,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9MYWJ5cmludGgiLCJzY2FsZSI6MX1d/24fe6dc261/Labyrinth.png",
+      "category": "stash"
+    },
+    {
+      "name": "Omen of Death-dancing",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 2.1,
+      "totalChaos": 4.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQXptZXJpL1Zvb2Rvb09tZW5zMVllbGxvdyIsInNjYWxlIjoxfV0/cbc6367481/VoodooOmens1Yellow.png",
+      "category": "stash"
+    },
+    {
+      "name": "Legion Thread",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 4.2,
+      "totalChaos": 4.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9MZWdpb25UaHJlYWQiLCJzY2FsZSI6MX1d/819bd1a22b/LegionThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Skeleton",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 4.2,
+      "totalChaos": 4.2,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Wild Crystallised Lifeforce",
+      "tab": "5",
+      "quantity": 195,
+      "priceChaos": 0.02,
+      "totalChaos": 3.9,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvSGFydmVzdC9XaWxkTGlmZWZvcmNlIiwic2NhbGUiOjF9XQ/e3d0b372b0/WildLifeforce.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 5)",
+      "tab": "1",
+      "quantity": 5,
+      "priceChaos": 0.8,
+      "totalChaos": 4,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzNSIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/017abfae5a/MapNumbers5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 2)",
+      "tab": "1",
+      "quantity": 4,
+      "priceChaos": 1,
+      "totalChaos": 4,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzMiIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/f7034052ac/MapNumbers2.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Endurance",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 3.8,
+      "totalChaos": 3.8,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Shard of Fate",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 3.5,
+      "totalChaos": 3.5,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Breach Thread",
+      "tab": "1",
+      "quantity": 7,
+      "priceChaos": 0.5,
+      "totalChaos": 3.5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9CcmVhY2hUaHJlYWQiLCJzY2FsZSI6MX1d/d600d1d343/BreachThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Lover",
+      "tab": "1",
+      "quantity": 3,
+      "priceChaos": 1.1,
+      "totalChaos": 3.3,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Jeweller's Delirium Orb",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 3.2,
+      "totalChaos": 3.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRGVsaXJpdW0vRGVsaXJpdW1PcmJUcmlua2V0cyIsInNjYWxlIjoxfV0/165e84bd2a/DeliriumOrbTrinkets.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Jinxed Juju",
+      "tab": "~price 1 chaos",
+      "quantity": 1,
+      "priceChaos": 3,
+      "totalChaos": 3,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9KdWp1c1NvdWwiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/6d30276e6f/JujusSoul.png",
+      "category": "stash"
+    },
+    {
+      "name": "Bear Trap - 20/0",
+      "tab": "~price 1 chaos",
+      "quantity": 1,
+      "priceChaos": 3,
+      "totalChaos": 3,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9CZWFyVHJhcCIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/fcffffae90/BearTrap.png",
+      "category": "stash"
+    },
+    {
+      "name": "Vivid Crystallised Lifeforce",
+      "tab": "5",
+      "quantity": 69,
+      "priceChaos": 0.03,
+      "totalChaos": 2.07,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvSGFydmVzdC9WaXZpZExpZmVmb3JjZSIsInNjYWxlIjoxfV0/a355b8a5a2/VividLifeforce.png",
+      "category": "stash"
+    },
+    {
+      "name": "Ritual Thread",
+      "tab": "1",
+      "quantity": 6,
+      "priceChaos": 0.3,
+      "totalChaos": 1.8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9SaXR1YWxUaHJlYWQiLCJzY2FsZSI6MX1d/ec35a48af4/RitualThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 6)",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 1,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzNiIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/0a0ad13351/MapNumbers6.png",
+      "category": "stash"
+    },
+    {
+      "name": "Molten Strike - 1/20",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 2,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9Nb2x0ZW5TdHJpa2UiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/cf165ed041/MoltenStrike.png",
+      "category": "stash"
+    },
+    {
+      "name": "Increased Critical Strikes Support - 1/0",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 1,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0luY3JlYXNlZENyaXRpY2FsU3RyaWtlcyIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/afc7a604cf/IncreasedCriticalStrikes.png",
+      "category": "stash"
+    },
+    {
+      "name": "Last Resort",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 2,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvV2VhcG9ucy9PbmVIYW5kV2VhcG9ucy9DbGF3cy9OZXJhc0xhc3RSZXNvcnQiLCJ3IjoyLCJoIjoyLCJzY2FsZSI6MX1d/5f5a6bd205/NerasLastResort.png",
+      "category": "stash"
+    },
+    {
+      "name": "Allelopathy",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 2,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9HbG92ZXMvRW1iYWxtZXJzR2xvdmVzIiwidyI6MiwiaCI6Miwic2NhbGUiOjF9XQ/62148488f8/EmbalmersGloves.png",
+      "category": "stash"
+    },
+    {
+      "name": "Doedre's Tongue",
+      "tab": "3",
+      "quantity": 2,
+      "priceChaos": 1,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9Eb2VkcmVzVG9uZ3VlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/434403db05/DoedresTongue.png",
+      "category": "stash"
+    },
+    {
+      "name": "Screaming Essence of Zeal",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 2,
+      "totalChaos": 2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9aZWFsNSIsInNjYWxlIjoxfV0/27f4023314/Zeal5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Jeweller's Orb",
+      "tab": "3",
+      "quantity": 66,
+      "priceChaos": 0.03,
+      "totalChaos": 1.98,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxTb2NrZXROdW1iZXJzIiwic2NhbGUiOjF9XQ/ba411ff58a/CurrencyRerollSocketNumbers.png",
+      "category": "stash"
+    },
+    {
+      "name": "Screaming Essence of Fear",
+      "tab": "1",
+      "quantity": 3,
+      "priceChaos": 0.6,
+      "totalChaos": 1.8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9GZWFyNSIsInNjYWxlIjoxfV0/1032005927/Fear5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Ritual Splinter",
+      "tab": "1",
+      "quantity": 7,
+      "priceChaos": 0.2,
+      "totalChaos": 1.4,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUml0dWFsL1JpdHVhbFNwbGludGVyIiwic2NhbGUiOjF9XQ/702c7441d8/RitualSplinter.png",
+      "category": "stash"
+    },
+    {
+      "name": "Lesser Eldritch Ember",
+      "tab": "5",
+      "quantity": 3,
+      "priceChaos": 0.6,
+      "totalChaos": 1.8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ2xlYW5zaW5nRmlyZU9yYlJhbmsxIiwic2NhbGUiOjF9XQ/c7df0e0316/CleansingFireOrbRank1.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 4)",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 0.8,
+      "totalChaos": 1.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzNCIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/595a2fa3b8/MapNumbers4.png",
+      "category": "stash"
+    },
+    {
+      "name": "Turbulent Catalyst",
+      "tab": "1",
+      "quantity": 5,
+      "priceChaos": 0.3,
+      "totalChaos": 1.5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ2F0YWx5c3RzL1R1cmJ1bGVudENhdGFseXN0Iiwic2NhbGUiOjF9XQ/1f49d03e58/TurbulentCatalyst.png",
+      "category": "stash"
+    },
+    {
+      "name": "Lesser Eldritch Ichor",
+      "tab": "5",
+      "quantity": 3,
+      "priceChaos": 0.5,
+      "totalChaos": 1.5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGFuZ2xlT3JiUmFuazEiLCJzY2FsZSI6MX1d/70e5e53590/TangleOrbRank1.png",
+      "category": "stash"
+    },
+    {
+      "name": "Blessed Orb",
+      "tab": "5",
+      "quantity": 7,
+      "priceChaos": 0.2,
+      "totalChaos": 1.4,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lJbXBsaWNpdE1vZCIsInNjYWxlIjoxfV0/48e700cc20/CurrencyImplicitMod.png",
+      "category": "stash"
+    },
+    {
+      "name": "Ultimatum Thread",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1.3,
+      "totalChaos": 1.3,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9VbHRpbWF0dW1UaHJlYWQiLCJzY2FsZSI6MX1d/74155b9b4e/UltimatumThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "Screaming Essence of Envy",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1.2,
+      "totalChaos": 1.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9FbnZ5NSIsInNjYWxlIjoxfV0/19657c80a1/Envy5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Emperor's Luck",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1.1,
+      "totalChaos": 1.1,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Incursion Thread",
+      "tab": "1",
+      "quantity": 4,
+      "priceChaos": 0.3,
+      "totalChaos": 1.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9JbmN1cnNpb25UaHJlYWQiLCJzY2FsZSI6MX1d/c727d5bfc4/IncursionThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "Heavy Strike - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9IZWF2eVN0cmlrZSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/d42c7dbd54/HeavyStrike.png",
+      "category": "stash"
+    },
+    {
+      "name": "Swift Affliction Support - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L1N1cHBvcnRSYXBpZERlY2F5R2VtIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/bed2b2a224/SupportRapidDecayGem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Arc - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9BcmMiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/b906e66011/Arc.png",
+      "category": "stash"
+    },
+    {
+      "name": "Fireball - 1/20",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9GaXJlYmFsbCIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/5460095431/Fireball.png",
+      "category": "stash"
+    },
+    {
+      "name": "Carcass Jack",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9Cb2R5QXJtb3Vycy9DYXJjYXNzSmFjayIsInciOjIsImgiOjMsInNjYWxlIjoxfV0/e496ea8e6e/CarcassJack.png",
+      "category": "stash"
+    },
+    {
+      "name": "Momentum Support - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L01vbWVudHVtU3VwcG9ydEdlbSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/ccdd57e05a/MomentumSupportGem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Araku Tiki",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9BbXVsZXQyVW5pcXVlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/6468b95d6b/Amulet2Unique.png",
+      "category": "stash"
+    },
+    {
+      "name": "12% increased Cold Damage 11p/68",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL05ld0dlbUJhc2UzIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/db35e60885/NewGemBase3.png",
+      "category": "stash"
+    },
+    {
+      "name": "Spark - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TcGFyayIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/0c52dd0d69/Spark.png",
+      "category": "stash"
+    },
+    {
+      "name": "Mirror Arrow - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9NaXJyb3JBcnJvdyIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/2c76b112a2/MirrorArrow.png",
+      "category": "stash"
+    },
+    {
+      "name": "Chain of Endurance",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQmVsdHMvVW5oZWFsdGh5QnVyZGVuIiwidyI6MiwiaCI6MSwic2NhbGUiOjF9XQ/d59c2c2bc9/UnhealthyBurden.png",
+      "category": "stash"
+    },
+    {
+      "name": "Soulrend - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9Tb3VscmVuZCIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/aa82ffc626/Soulrend.png",
+      "category": "stash"
+    },
+    {
+      "name": "Blood and Sand - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9CbG9vZFNhbmRTdGFuY2VHZW0iLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/252f9a3a0b/BloodSandStanceGem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Vaal Ice Shot - 1/0 corrupted",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9WYWFsR2Vtcy9WYWFsSWNlU2hvdCIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/1c767a1fbf/VaalIceShot.png",
+      "category": "stash"
+    },
+    {
+      "name": "Flame Surge - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9GbGFtZXdoaXAiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/73a74427e7/Flamewhip.png",
+      "category": "stash"
+    },
+    {
+      "name": "Combustion Support - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0NoYW5jZXRvSWduaXRlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/b24521e59a/ChancetoIgnite.png",
+      "category": "stash"
+    },
+    {
+      "name": "Kinetic Instability Support - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0tpbmV0aWNJbnN0YWJpbGl0eVN1cHBvcnRHZW0iLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/c6d844a555/KineticInstabilitySupportGem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Sniper's Mark - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9Qcm9qZWN0aWxlV2Vha25lc3MiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/92040afb2a/ProjectileWeakness.png",
+      "category": "stash"
+    },
+    {
+      "name": "Flamewood Support - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0ZsYW1ld29vZCIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/83ebdeea1c/Flamewood.png",
+      "category": "stash"
+    },
+    {
+      "name": "Minion Damage Support - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L01pbmlvbkRhbWFnZSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/9bf4329029/MinionDamage.png",
+      "category": "stash"
+    },
+    {
+      "name": "Kinetic Bolt - 1/0",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9aaWdaYWdXYW5kU2tpbGwiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/1600c27b5e/ZigZagWandSkill.png",
+      "category": "stash"
+    },
+    {
+      "name": "Swordstorm - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9XZWFwb25TdG9ybVNraWxsIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/be6f64c9c5/WeaponStormSkill.png",
+      "category": "stash"
+    },
+    {
+      "name": "More Duration Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0luY3JlYXNlZER1cmF0aW9uIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/a5db7ae0bd/IncreasedDuration.png",
+      "category": "stash"
+    },
+    {
+      "name": "Multiple Projectiles Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0xlc3Nlck11bHRpcGxlUHJvamVjdGlsZXMiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/db32a787d3/LesserMultipleProjectiles.png",
+      "category": "stash"
+    },
+    {
+      "name": "Rashkaldor's Patience",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9SYXNoa2FsZG9yc1BhdGllbmNlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/336e3419f4/RashkaldorsPatience.png",
+      "category": "stash"
+    },
+    {
+      "name": "Ghostwrithe",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9Cb2R5QXJtb3Vycy9HaG9zdHdlYXZlIiwidyI6MiwiaCI6Mywic2NhbGUiOjF9XQ/95d1911033/Ghostweave.png",
+      "category": "stash"
+    },
+    {
+      "name": "Purifying Flame - 1/20",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9QdXJpZnlpbmdGbGFtZSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/e933be7d7c/PurifyingFlame.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Warden's Brand",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmluZ3MvVGhlV2FyZGVuc0JhbmQiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/5d3830d11d/TheWardensBand.png",
+      "category": "stash"
+    },
+    {
+      "name": "Mark On Hit Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L01hcmtPbkhpdHRpbmciLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/082becefa3/MarkOnHitting.png",
+      "category": "stash"
+    },
+    {
+      "name": "Hex Bloom Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9IZXhTcHJlYWRpbmdTdXBwb3J0IiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/873fa8ef65/HexSpreadingSupport.png",
+      "category": "stash"
+    },
+    {
+      "name": "Blood Rage - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9CbG9vZFJhZ2UiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/199f6b772e/BloodRage.png",
+      "category": "stash"
+    },
+    {
+      "name": "Bones of Ullr",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9Cb290cy9ib290dW5pcXVlIiwidyI6MiwiaCI6Miwic2NhbGUiOjF9XQ/1dfabe3358/bootunique.png",
+      "category": "stash"
+    },
+    {
+      "name": "Kalisa's Grace",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQXJtb3Vycy9HbG92ZXMvS2FsaXNhc0dyYWNlIiwidyI6MiwiaCI6Miwic2NhbGUiOjF9XQ/b165e39eff/KalisasGrace.png",
+      "category": "stash"
+    },
+    {
+      "name": "Greater Volley Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0dyZWF0ZXJWb2xsZXlTdXBwb3J0IiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/bb821215f4/GreaterVolleySupport.png",
+      "category": "stash"
+    },
+    {
+      "name": "Minion Life Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L01pbmlvbkxpZmUiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/efcc549806/MinionLife.png",
+      "category": "stash"
+    },
+    {
+      "name": "Nightblade Support - 1/0",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L05pZ2h0YmxhZGUiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/ffa3ac8f49/Nightblade.png",
+      "category": "stash"
+    },
+    {
+      "name": "Brutality Support - 1/0",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0JydXRhbGl0eSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/62f8d5318d/Brutality.png",
+      "category": "stash"
+    },
+    {
+      "name": "Ngamahu's Sign",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmluZ3MvTmdhbWFodXNTaWduIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/4323574c5a/NgamahusSign.png",
+      "category": "stash"
+    },
+    {
+      "name": "Perandus Blazon",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQmVsdHMvQnVja2xlZEJlbHRVbmlxdWUyIiwidyI6MiwiaCI6MSwic2NhbGUiOjF9XQ/b67e6fa4a9/BuckledBeltUnique2.png",
+      "category": "stash"
+    },
+    {
+      "name": "Fist of War Support - 1/0",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9TdXBwb3J0L0Zpc3RPZldhckdlbSIsInciOjEsImgiOjEsInNjYWxlIjoxfV0/6ba67a3963/FistOfWarGem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Flammability - 1/0",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9GbGFtbWFiaWxpdHkiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/9509f4c3a7/Flammability.png",
+      "category": "stash"
+    },
+    {
+      "name": "Punishment - 1/0",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9QdW5pc2htZW50IiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/06feb2d185/Punishment.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Ignomon",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9BbXVsZXQ2VW5pcXVlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/41a964dea4/Amulet6Unique.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 14)",
+      "tab": "~price 1 chaos",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzMTQiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MSwibW4iOjI0LCJtdCI6MH1d/e8c094db28/MapNumbers14.png",
+      "category": "stash"
+    },
+    {
+      "name": "Explosive Concoction - 1/0",
+      "tab": "~price 1 chaos",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9FeHBsb3NpdmVGbGFza1NraWxsR2VtIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/7a8b38230f/ExplosiveFlaskSkillGem.png",
+      "category": "stash"
+    },
+    {
+      "name": "Map (Tier 8)",
+      "tab": "~price 1 chaos",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzOCIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowfV0/d0a8b07334/MapNumbers8.png",
+      "category": "stash"
+    },
+    {
+      "name": "Scroll of Wisdom",
+      "tab": "5",
+      "quantity": 54,
+      "priceChaos": 0.02,
+      "totalChaos": 1.08,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lJZGVudGlmaWNhdGlvbiIsInNjYWxlIjoxfV0/c2d03ed3fd/CurrencyIdentification.png",
+      "category": "stash"
+    },
+    {
+      "name": "Betrayal Thread",
+      "tab": "1",
+      "quantity": 4,
+      "priceChaos": 0.2,
+      "totalChaos": 0.8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9CZXRyYXlhbFRocmVhZCIsInNjYWxlIjoxfV0/fa10b037f1/BetrayalThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Gemcutter",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 1,
+      "totalChaos": 1,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Expedition Thread",
+      "tab": "1",
+      "quantity": 4,
+      "priceChaos": 0.2,
+      "totalChaos": 0.8,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvVGhyZWFkcy9FeHBlZGl0aW9uVGhyZWFkIiwic2NhbGUiOjF9XQ/9541c89bf9/ExpeditionThread.png",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Zeal",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 0.8,
+      "totalChaos": 0.8,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Zeal4.png",
+      "category": "stash"
+    },
+    {
+      "name": "Screaming Essence of Hatred",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.7,
+      "totalChaos": 0.7,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9IYXRyZWQ1Iiwic2NhbGUiOjF9XQ/79d7666969/Hatred5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Screaming Essence of Woe",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.7,
+      "totalChaos": 0.7,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9Xb2U1Iiwic2NhbGUiOjF9XQ/685579dedd/Woe5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Scrap Metal",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.6,
+      "totalChaos": 0.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbi9EZWFsZXJSZWZyZXNoQ3VycmVuY3kiLCJzY2FsZSI6MX1d/7c2be64768/DealerRefreshCurrency.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Hermit",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.6,
+      "totalChaos": 0.6,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Noxious Catalyst",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 0.3,
+      "totalChaos": 0.6,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ2F0YWx5c3RzL0NoYW9zUGh5c2ljYWxDYXRhbHlzdCIsInNjYWxlIjoxfV0/2b886f8343/ChaosPhysicalCatalyst.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Stormcaller",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.5,
+      "totalChaos": 0.5,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "The Scholar",
+      "tab": "1",
+      "quantity": 2,
+      "priceChaos": 0.2,
+      "totalChaos": 0.4,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Abandoned Wealth",
+      "tab": "3",
+      "quantity": 1,
+      "priceChaos": 0.5,
+      "totalChaos": 0.5,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Rain of Chaos",
+      "tab": "1",
+      "quantity": 5,
+      "priceChaos": 0.1,
+      "totalChaos": 0.5,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Screaming Essence of Dread",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.5,
+      "totalChaos": 0.5,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9EcmVhZDUiLCJzY2FsZSI6MX1d/089502a0ef/Dread5.png",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Suffering",
+      "tab": "5",
+      "quantity": 2,
+      "priceChaos": 0.2,
+      "totalChaos": 0.4,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Suffering4.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Insatiable",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.3,
+      "totalChaos": 0.3,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Rage",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.3,
+      "totalChaos": 0.3,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Rage4.png",
+      "category": "stash"
+    },
+    {
+      "name": "Accelerating Catalyst",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.3,
+      "totalChaos": 0.3,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ2F0YWx5c3RzL1NwZWVkTW9kaWZpZXJDYXRhbHlzdCIsInNjYWxlIjoxfV0/6493f34e78/SpeedModifierCatalyst.png",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Spite",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 0.3,
+      "totalChaos": 0.3,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Spite4.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Incantation",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.3,
+      "totalChaos": 0.3,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Hatred",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 0.2,
+      "totalChaos": 0.2,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Hatred4.png",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Anger",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 0.2,
+      "totalChaos": 0.2,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Anger4.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Scarred Meadow",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.2,
+      "totalChaos": 0.2,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Victario's Acuity",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.2,
+      "totalChaos": 0.2,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQW11bGV0cy9UdXJxdW9pc2VBbXVsZXRVbmlxdWUiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/8ba340b31f/TurquoiseAmuletUnique.png",
+      "category": "stash"
+    },
+    {
+      "name": "Wailing Essence of Doubt",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.2,
+      "totalChaos": 0.2,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Doubt4.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Hoarder",
+      "tab": "1",
+      "quantity": 3,
+      "priceChaos": 0.07,
+      "totalChaos": 0.21,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "The Catalyst",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.2,
+      "totalChaos": 0.2,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Vaal Detonate Dead - 1/0 corrupted",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.1,
+      "totalChaos": 0.1,
+      "icon": "https://web.poecdn.com/gen/image/WzMwLDE0LHsiZiI6IjJESXRlbXMvR2Vtcy9WYWFsR2Vtcy9WYWFsRGV0b25hdGVEZWFkIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/28db5033a3/VaalDetonateDead.png",
+      "category": "stash"
+    },
+    {
+      "name": "Muttering Essence of Contempt",
+      "tab": "2",
+      "quantity": 3,
+      "priceChaos": 0.04,
+      "totalChaos": 0.12,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Contempt2.png",
+      "category": "stash"
+    },
+    {
+      "name": "The Scavenger",
+      "tab": "1",
+      "quantity": 1,
+      "priceChaos": 0.1,
+      "totalChaos": 0.1,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "The Lich",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.08,
+      "totalChaos": 0.08,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1",
+      "category": "stash"
+    },
+    {
+      "name": "Weeping Essence of Doubt",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.07,
+      "totalChaos": 0.07,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Doubt3.png",
+      "category": "stash"
+    },
+    {
+      "name": "Muttering Essence of Anger",
+      "tab": "5",
+      "quantity": 2,
+      "priceChaos": 0.03,
+      "totalChaos": 0.06,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Anger2.png",
+      "category": "stash"
+    },
+    {
+      "name": "Whispering Essence of Contempt",
+      "tab": "2",
+      "quantity": 3,
+      "priceChaos": 0.01,
+      "totalChaos": 0.03,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Contempt1.png",
+      "category": "stash"
+    },
+    {
+      "name": "Alchemy Shard",
+      "tab": "5",
+      "quantity": 8,
+      "priceChaos": 0.005,
+      "totalChaos": 0.04,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyUpgradeToRareShard.png",
+      "category": "stash"
+    },
+    {
+      "name": "Muttering Essence of Woe",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 0.03,
+      "totalChaos": 0.03,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Woe2.png",
+      "category": "stash"
+    },
+    {
+      "name": "Muttering Essence of Sorrow",
+      "tab": "5",
+      "quantity": 1,
+      "priceChaos": 0.03,
+      "totalChaos": 0.03,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Sorrow2.png",
+      "category": "stash"
+    },
+    {
+      "name": "Alteration Shard",
+      "tab": "5",
+      "quantity": 2,
+      "priceChaos": 0.01,
+      "totalChaos": 0.02,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollMagicShard.png",
+      "category": "stash"
+    },
+    {
+      "name": "Scroll Fragment",
+      "tab": "5",
+      "quantity": 4,
+      "priceChaos": 0.004,
+      "totalChaos": 0.02,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyIdentificationFragment.png",
+      "category": "stash"
+    },
+    {
+      "name": "Transmutation Shard",
+      "tab": "5",
+      "quantity": 7,
+      "priceChaos": 0.002,
+      "totalChaos": 0.01,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyUpgradeToMagicShard.png",
+      "category": "stash"
+    },
+    {
+      "name": "Amber Oil",
+      "tab": "5",
+      "quantity": 3,
+      "priceChaos": 0.003,
+      "totalChaos": 0.01,
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvT2lscy9BbWJlck9pbCIsInNjYWxlIjoxfV0/bd5ce1adfa/AmberOil.png",
+      "category": "stash"
+    },
+    {
+      "name": "Whispering Essence of Hatred",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.009,
+      "totalChaos": 0.01,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Essence/Hatred1.png",
+      "category": "stash"
+    },
+    {
+      "name": "Sepia Oil",
+      "tab": "2",
+      "quantity": 1,
+      "priceChaos": 0.001,
+      "totalChaos": 0,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Oils/SepiaOil.png",
+      "category": "stash"
+    },
+    {
+      "name": "Clear Oil",
+      "tab": "5",
+      "quantity": 3,
+      "priceChaos": 0.0004,
+      "totalChaos": 0,
+      "icon": "https://web.poecdn.com/image/Art/2DItems/Currency/Oils/ClearOil.png",
+      "category": "stash"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "wealthy-0",
+      "index": 0,
+      "label": "5",
+      "name": "5",
+      "kind": "Wealthy Exile",
+      "color": "#8b7355"
+    },
+    {
+      "id": "wealthy-1",
+      "index": 1,
+      "label": "1",
+      "name": "1",
+      "kind": "Wealthy Exile",
+      "color": "#8b7355"
+    },
+    {
+      "id": "wealthy-2",
+      "index": 2,
+      "label": "3",
+      "name": "3",
+      "kind": "Wealthy Exile",
+      "color": "#8b7355"
+    },
+    {
+      "id": "wealthy-3",
+      "index": 3,
+      "label": "~price 1 chaos",
+      "name": "~price 1 chaos",
+      "kind": "Wealthy Exile",
+      "color": "#8b7355"
+    },
+    {
+      "id": "wealthy-4",
+      "index": 4,
+      "label": "2",
+      "name": "2",
+      "kind": "Wealthy Exile",
+      "color": "#8b7355"
+    }
+  ],
+  "lastSyncedAt": "2026-11-23T06:06:35.041Z"
+}

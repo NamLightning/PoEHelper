@@ -9,7 +9,7 @@ export const MARKET_CATEGORY_ICONS = {
   'blighted-maps': `${CDN}/gen/image/WzI4LDE0LHsiZiI6IjJESXRlbXMvTWFwcy9BdGxhczJNYXBzL05ldy9NYXBOdW1iZXJzNSIsInciOjEsImgiOjEsInNjYWxlIjoxLCJtbiI6MjQsIm10IjowLCJtYiI6dHJ1ZX1d/29c6686bed/MapNumbers5.png`,
   'cluster-jewels': `${CDN}/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL05ld0dlbUJhc2UzIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/db35e60885/NewGemBase3.png`,
   corpses: `${CDN}/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQXptZXJpL1RpZ2VyQmVzdGlhcnlTcGlyaXRCb3NzQ29ycHNlIiwidyI6MywiaCI6Miwic2NhbGUiOjF9XQ/6a46a7dc19/TigerBestiarySpiritBossCorpse.png`,
-  currency: `${CDN}/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lNb2RWYWx1ZXMiLCJzY2FsZSI6MX1d/ec48896769/CurrencyModValues.png`,
+  currency: `${CDN}/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lEdXBsaWNhdGUiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/7111e35254/CurrencyDuplicate.png`,
   'djinn-coins': 'https://www.poewiki.net/images/4/47/Coin_of_Power_inventory_icon.png',
   'delirium-orbs': `${CDN}/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRGVsaXJpdW0vRGVsaXJpdW1PcmJNYXBzIiwic2NhbGUiOjF9XQ/0e2be34e49/DeliriumOrbMaps.png`,
   'divination-cards': `${CDN}/image/Art/2DItems/Divination/InventoryIcon.png?scale=1&w=1&h=1`,

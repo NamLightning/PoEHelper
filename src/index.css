@@ -43,9 +43,10 @@ body,
 
 body {
   margin: 0;
-  background-color: #0d2b36;
-  background-image: linear-gradient(rgba(10, 15, 22, 0.25), rgba(10, 15, 22, 0.25)), url('/images/bg-network.png');
-  background-position: center;
+  background-color: #080a0b;
+  /* Keep the image/overlay on body only so cards and navigation keep their own colors. */
+  background-image: linear-gradient(rgba(13, 28, 31, 0.25), rgba(8, 12, 13, 0.45)), url('/bg-waves.jpg');
+  background-position: center center;
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;

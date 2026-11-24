@@ -11,12 +11,13 @@ import {
   getAccountConfigStatus,
   saveAccountConfig,
 } from './poeAccount.js'
+import { readStashFileCache, syncPoeStash, writeStashFileCache } from './poeStash.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3001
 
 app.disable('x-powered-by')
-app.use(express.json({ limit: '8kb' }))
+app.use(express.json({ limit: '2mb' }))
 
 function sendAccountError(response, error) {
   const status = Number.isInteger(error?.status) ? error.status : 500
@@ -115,6 +116,50 @@ app.get('/api/account/character-items', async (request, response) => {
   }
 })
 
+async function syncStashHandler(request, response) {
+  const requestedLeague = request.method === 'POST' ? request.body?.league : request.query.league
+  const league = typeof requestedLeague === 'string' ? requestedLeague.trim() : 'Standard'
+  try {
+    response.json(await syncPoeStash(league))
+  } catch (error) {
+    console.error('Direct PoE stash sync failed:', error)
+    const status = Number.isInteger(error?.status) && error.status >= 400 && error.status <= 599
+      ? error.status
+      : 502
+    response.status(status).json({
+      error: error instanceof Error ? error.message : 'Could not sync PoE stash.',
+      code: error?.code || 'STASH_SYNC_FAILED',
+    })
+  }
+}
+
+app.get('/api/stash/sync', syncStashHandler)
+app.post('/api/stash/sync', syncStashHandler)
+
+app.get('/api/stash/cache', async (_request, response) => {
+  try {
+    response.json(await readStashFileCache())
+  } catch (error) {
+    console.error('Reading persisted PoE stash cache failed:', error)
+    response.status(500).json({
+      error: 'Could not read the persisted stash cache.',
+      code: 'STASH_CACHE_READ_FAILED',
+    })
+  }
+})
+
+app.post('/api/stash/snapshots', async (request, response) => {
+  try {
+    const snapshots = Array.isArray(request.body?.snapshots) ? request.body.snapshots.slice(0, 30) : []
+    const cache = await readStashFileCache()
+    await writeStashFileCache({ ...cache, snapshots })
+    response.json({ ok: true, snapshots })
+  } catch (error) {
+    console.error('Persisting PoE stash snapshots failed:', error)
+    response.status(500).json({ error: 'Could not persist stash snapshots.', code: 'STASH_SNAPSHOT_WRITE_FAILED' })
+  }
+})
+
 app.get('/api/market/leagues', async (_request, response) => {
   try {
     response.json(await getPoeOneLeagues())
@@ -199,6 +244,13 @@ app.get('/api/market/summary', async (request, response) => {
       details: error instanceof Error ? error.message : 'Unknown upstream error.',
     })
   }
+})
+
+app.use('/api', (_request, response) => {
+  response.status(404).json({
+    error: 'API route not found.',
+    code: 'API_NOT_FOUND',
+  })
 })
 
 app.listen(port, '127.0.0.1')
