@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Impit } from 'impit'
+import { configuredSessionId, poeHeaders, logPoeForbidden, poeFetch, POE_USER_AGENT } from './server/poeRequest.js'
 
 const STASH_SYNC_CACHE_PATH = path.resolve(process.cwd(), 'stash.local.json')
 let stashSyncState = { items: [], tabs: [], lastSyncedAt: null }
@@ -68,22 +69,12 @@ function readLocalConfig() {
 
 function readPoeSessionId(env) {
   const config = readLocalConfig()
-  const value = config.POESESSID || config.poesessid || env.VITE_POESESSID || ''
-  return typeof value === 'string' ? value.trim().replace(/^POESESSID=/i, '').trim() : ''
+  return configuredSessionId(config, { ...env, ...process.env })
 }
 
 function readPoeAccountName() {
   const config = readLocalConfig()
   return String(config.POE_ACCOUNT_NAME || config.accountName || '').split('#')[0].trim()
-}
-
-function logPoeSessionDebug(env) {
-  const config = readLocalConfig()
-  const sessionId = readPoeSessionId(env)
-  const preview = sessionId.length >= 8 ? `${sessionId.slice(0, 4)}...${sessionId.slice(-4)}` : '(empty/too short)'
-  console.log('[poe-stash] config keys:', Object.keys(config))
-  console.log('[poe-stash] POESESSID length:', sessionId.length, `(${preview})`)
-  if (sessionId.length !== 32) console.error('\x1b[31m[poe-stash] WARNING: POESESSID length is not 32. It may be empty, malformed, or expired.\x1b[0m')
 }
 
 function poeStashMiddleware(env) {
@@ -94,7 +85,6 @@ function poeStashMiddleware(env) {
       server.middlewares.use('/poe-stash', async (req, res, next) => {
         if (req.method !== 'GET') return next()
         try {
-          logPoeSessionDebug(env)
           const sessionId = readPoeSessionId(env)
           if (!sessionId) {
             res.statusCode = 403
@@ -118,17 +108,18 @@ function poeStashMiddleware(env) {
           if (!requestUrl.searchParams.get('realm')) requestUrl.searchParams.set('realm', 'pc')
           const targetUrl = `https://www.pathofexile.com/character-window${requestUrl.pathname}${requestUrl.search}`
           console.log('[poe-stash] targetUrl:', targetUrl)
-          console.log('[poe-stash] POESESSID length:', sessionId.length)
-          console.log(`[poe-stash] Using POESESSID: ${sessionId.slice(0, 4)}...${sessionId.slice(-4)}`)
-          const upstream = await impit.fetch(targetUrl, {
+          const upstream = await poeFetch(targetUrl, {
             headers: {
-              Cookie: `POESESSID=${sessionId}`,
+              ...poeHeaders(sessionId),
               Accept: 'application/json, text/plain, */*',
               Referer: 'https://www.pathofexile.com/my-account',
               'X-Requested-With': 'XMLHttpRequest',
             },
-          })
+          }, impit.fetch.bind(impit))
           const body = await upstream.text()
+          let payload
+          try { payload = JSON.parse(body) } catch { /* Non-JSON Forbidden pages still log HTTP 403. */ }
+          logPoeForbidden(targetUrl, upstream.status, payload)
           if (upstream.status !== 200 || body.includes('"error"') || body.includes('Forbidden')) {
             console.error('[poe-stash] upstream response:', body)
           }
@@ -138,8 +129,9 @@ function poeStashMiddleware(env) {
         } catch (error) {
           console.error('PoE stash middleware failed:', error)
           res.statusCode = error?.status || 500
+          if (error?.status === 429) res.setHeader('Retry-After', String(error.retryAfter || 60))
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ error: { message: error?.message || 'Could not reach the PoE stash API.' } }))
+          res.end(JSON.stringify({ error: { message: error?.message || 'Could not reach the PoE stash API.' }, code: error?.code, retryAfter: error?.retryAfter, retryAt: error?.retryAt, accountState: error?.accountState }))
         }
       })
     },
@@ -161,7 +153,7 @@ export default defineConfig(({ mode }) => {
         rewrite: (path) => path.replace(/^\/poe-trade-stats/, ''),
         headers: {
           Accept: 'application/json',
-          'User-Agent': 'PoEHelper/0.1.0 local market client',
+          'User-Agent': POE_USER_AGENT,
         },
       },
       '/api': {

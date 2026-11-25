@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Eye, EyeOff, X } from 'lucide-react'
+import { recordPoeCooldown, currentPoeDeadline } from '../lib/poeCooldown.js'
+import usePoeCooldown from '../lib/usePoeCooldown.js'
 
 async function readJson(response) {
   const contentType = response.headers.get('content-type') || ''
@@ -17,6 +19,7 @@ async function readJson(response) {
     throw new Error('The local API returned an invalid response.')
   }
 
+  recordPoeCooldown(response, result)
   if (!response.ok) {
     const error = new Error(result.error || `Account API returned HTTP ${response.status}.`)
     error.code = result.code
@@ -33,23 +36,9 @@ function errorStatus(error) {
     return 'Không tìm thấy tài khoản. Hãy kiểm tra Account Name#Tag.'
   }
   if (error.code === 'ACCOUNT_NOT_CONFIGURED') {
-    return 'Chưa cấu hình đầy đủ Account Name#Tag và POESESSID.'
+    return 'Chưa cấu hình Account Name#Tag hợp lệ.'
   }
   return error.message || 'Không thể kết nối tài khoản Path of Exile.'
-}
-
-async function validateStashSession(accountName, league) {
-  const cleanAccountName = String(accountName || '').split('#')[0].trim()
-  const cleanLeague = String(league || 'Standard').trim()
-  const query = new URLSearchParams({ accountName: cleanAccountName, realm: 'pc', league: cleanLeague, tabs: '1', tabIndex: '0' })
-  const response = await fetch(`/poe-stash/get-stash-items?${query.toString()}`)
-  const result = await response.json().catch(() => ({}))
-  if (result?.error || !response.ok) {
-    const error = new Error(result?.error?.message || result?.message || `Stash API returned HTTP ${response.status}.`)
-    error.code = result?.error?.code
-    throw error
-  }
-  return result
 }
 
 export default function AccountSettingsModal({
@@ -59,8 +48,8 @@ export default function AccountSettingsModal({
   onAccountSaved,
   onSelectCharacter,
   selectedCharacter,
-  league = 'Standard',
 }) {
+  const retrySeconds = usePoeCooldown()
   const [accountName, setAccountName] = useState('')
   const [sessionId, setSessionId] = useState('')
   const [cookieConfigured, setCookieConfigured] = useState(false)
@@ -105,12 +94,12 @@ export default function AccountSettingsModal({
   }, [open, onAccountName])
 
   async function loadCharacters() {
+    if (currentPoeDeadline() > Date.now()) return false
     setLoadingCharacters(true)
     try {
       const response = await fetch('/api/account/characters')
       const result = await readJson(response)
       setCharacters(result)
-      setCookieConfigured(true)
       setStatus({ kind: 'success', message: `Đã kết nối thành công · ${result.length} nhân vật.` })
       return true
     } catch (error) {
@@ -139,13 +128,9 @@ export default function AccountSettingsModal({
       onAccountSaved(config.accountName || accountName)
       setSessionId('')
       setStatus({ kind: 'neutral', message: 'Đã lưu cục bộ. Đang kiểm tra kết nối…' })
-      await loadCharacters()
-      try {
-        const stashResult = await validateStashSession(config.accountName || accountName, league)
-        const tabCount = Array.isArray(stashResult.tabs) ? stashResult.tabs.length : 0
-        setStatus({ kind: 'success', message: `Connected! Found ${tabCount} stash tabs` })
-      } catch (error) {
-        setStatus({ kind: 'error', message: error.code === 6 ? 'POESESSID bị GGG từ chối (code 6 Forbidden).' : error.message })
+      const connected = await loadCharacters()
+      if (connected && !config.cookieConfigured) {
+        setStatus({ kind: 'success', message: 'Đã lưu chế độ public profile · không gửi cookie POESESSID.' })
       }
     } catch (error) {
       setStatus({ kind: 'error', message: errorStatus(error) })
@@ -212,9 +197,8 @@ export default function AccountSettingsModal({
                 type={showSessionId ? 'text' : 'password'}
                 value={sessionId}
                 onChange={(event) => setSessionId(event.target.value)}
-                required={!cookieConfigured}
                 autoComplete="new-password"
-                placeholder={cookieConfigured ? 'Đã lưu — để trống nếu không đổi' : 'Dán cookie POESESSID'}
+                placeholder={cookieConfigured ? 'Để trống và Save để xóa cookie đã lưu' : 'Không bắt buộc với public profile'}
                 className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm outline-none"
               />
               <button
@@ -230,7 +214,7 @@ export default function AccountSettingsModal({
 
           <p className="text-xs leading-relaxed text-[var(--muted)]">
             POESESSID được lưu trong <code>config.local.json</code> trên máy này và không được trả về giao diện.
-            Chỉ nhập cookie từ tài khoản của bạn; không chia sẻ cookie này.
+            Để trống và bấm Save để xóa cookie đã lưu, chuyển sang public profile. Stash riêng tư cần cookie.
           </p>
 
           <div className="flex flex-wrap gap-2 pt-1">
@@ -244,7 +228,7 @@ export default function AccountSettingsModal({
             <button
               type="button"
               onClick={loadCharacters}
-              disabled={loadingConfig || saving || loadingCharacters || !cookieConfigured}
+              disabled={loadingConfig || saving || loadingCharacters || retrySeconds > 0 || !accountName.trim()}
               className="rounded-full border border-[var(--line)] px-4 py-2 text-sm hover:border-[var(--line-strong)] disabled:opacity-50"
             >
               {loadingCharacters ? 'Loading…' : 'Load Characters'}
@@ -252,9 +236,9 @@ export default function AccountSettingsModal({
           </div>
         </form>
 
-        {status.message ? (
+        {status.message || retrySeconds > 0 ? (
           <p role={status.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${statusColor}`}>
-            {status.message}
+            {retrySeconds > 0 ? `GGG API đang giới hạn tốc độ truy cập. Vui lòng thử lại sau ${retrySeconds}s` : status.message}
           </p>
         ) : null}
 

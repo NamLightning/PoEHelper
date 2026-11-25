@@ -750,7 +750,7 @@ function FilterSelect({ label, value, onChange, options, disabled = false, class
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className="h-12 w-full appearance-none rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 px-3 pb-0 pt-4 text-sm font-medium text-[#f1f5f9] outline-none transition-colors focus:border-[#00b98d] disabled:opacity-50"
+        className="h-12 w-full appearance-none rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 px-3 pb-0 pt-4 text-sm font-medium text-[#f1f5f9] outline-none transition-colors focus:border-[var(--market-accent)] disabled:opacity-50"
       >
         {options.map((option) => {
           const item = Array.isArray(option) ? { value: option[0], label: option[1] } : { value: option, label: option }
@@ -1710,7 +1710,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
   const nameSortKey = 'name'
 
   return (
-    <section className="-mt-2 rounded-xl border border-white/[0.14] bg-[#151e27]/90 text-[#dbe3e5] shadow-[0_20px_50px_rgba(0,0,0,0.65)] backdrop-blur-md">
+    <section className="economy-theme economy-surface -mt-2">
       <div className="grid gap-2 border-b border-white/[0.12] bg-[#1e2936]/75 p-3 sm:grid-cols-[minmax(0,1fr)_250px]">
         <div className="relative">
           <label className="block">
@@ -1729,7 +1729,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
               placeholder="Search by item..."
               aria-label="Search all market items"
               autoComplete="off"
-              className="h-11 w-full border border-white/[0.12] bg-[#1e2936]/75 pl-9 pr-10 text-sm text-[#e0e8ea] outline-none placeholder:text-[#77868d] focus:border-[#00b98d]"
+              className="h-11 w-full border border-white/[0.12] bg-[#1e2936]/75 pl-9 pr-10 text-sm text-[#e0e8ea] outline-none placeholder:text-[#77868d] focus:border-[var(--market-accent)]"
             />
           </label>
           {globalSearchText ? (
@@ -1741,7 +1741,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                 setGlobalSearchResults([])
               }}
               aria-label="Clear global item search"
-              className="absolute right-3 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-xs text-[#9baab0] hover:bg-[#26353c] hover:text-white"
+              className="absolute right-3 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-xs text-[var(--market-muted)] hover:bg-[#26353c] hover:text-white"
             >
               ×
             </button>
@@ -1762,7 +1762,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     setGlobalSearchOpen(false)
                     setVisibleCount(PAGE_SIZE)
                   }}
-                  className="grid w-full grid-cols-[minmax(0,1fr)_150px] items-center gap-3 px-3 py-2 text-left hover:bg-[#26343b]"
+                  className="grid w-full grid-cols-[minmax(0,1fr)_150px] items-center gap-3 px-3 py-2 text-left hover:bg-[var(--market-hover)]"
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <ItemIcon item={item} iconUrl={currencyIconMap[item.name]} small />
@@ -1785,7 +1785,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
               onLeagueChange(event.target.value)
             }}
             disabled={loadingLeagues || leagues.length === 0}
-            className="h-12 w-full appearance-none rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 px-3 pb-0 pt-4 text-sm font-medium text-white outline-none focus:border-[#00b98d] disabled:opacity-50"
+            className="h-12 w-full appearance-none rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 px-3 pb-0 pt-4 text-sm font-medium text-white outline-none focus:border-[var(--market-accent)] disabled:opacity-50"
           >
             {league && !leagues.some((item) => item.id === league) ? (
               <option value={league}>{league}</option>
@@ -1829,7 +1829,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                         aria-current={active ? 'page' : undefined}
                         className={`flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-[15px] transition ${
                           active
-                            ? 'bg-teal-500/[0.12] font-semibold text-[#2dd4bf]'
+                            ? 'bg-teal-500/[0.12] font-semibold text-[var(--market-highlight)]'
                             : 'font-medium text-[#e2e8f0] hover:bg-white/[0.05] hover:text-white'
                         }`}
                       >
@@ -1896,10 +1896,10 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                 value={filterText}
                 onChange={(event) => setFilterText(event.target.value)}
                 placeholder="Filter items"
-                className="h-12 w-full rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 pl-9 pr-8 text-sm font-medium text-white outline-none placeholder:text-[#aab3ba] focus:border-[#00b98d]"
+                className="h-12 w-full rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 pl-9 pr-8 text-sm font-medium text-white outline-none placeholder:text-[#aab3ba] focus:border-[var(--market-accent)]"
               />
               {filterText ? (
-                <button type="button" onClick={() => setFilterText('')} aria-label="Clear item filter" className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center text-xs text-[#9baab0] hover:text-white">×</button>
+                <button type="button" onClick={() => setFilterText('')} aria-label="Clear item filter" className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center text-xs text-[var(--market-muted)] hover:text-white">×</button>
               ) : null}
             </label>
             {showAscendancy ? (
@@ -1927,7 +1927,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
               ['online', 'In Person (Online)'],
               ['any', 'Any'],
             ]} />
-            <button type="button" onClick={refreshMarket} disabled={!league || loading || loadingLeagues} aria-label="Refresh market prices" title="Refresh prices" className="grid h-12 min-w-[48px] place-items-center rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 text-[#aebbc0] hover:border-[#00b98d] hover:text-white disabled:opacity-50">
+            <button type="button" onClick={refreshMarket} disabled={!league || loading || loadingLeagues} aria-label="Refresh market prices" title="Refresh prices" className="grid h-12 min-w-[48px] place-items-center rounded-[2px] border border-white/[0.14] bg-[#1c2632]/90 text-[#aebbc0] hover:border-[var(--market-accent)] hover:text-white disabled:opacity-50">
               <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
@@ -1941,14 +1941,14 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     value={filterText}
                     onChange={(event) => setFilterText(event.target.value)}
                     placeholder="Filter items"
-                    className="h-8 w-48 border border-[#3b4951] bg-[#11191f] pl-8 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                    className="h-8 w-48 border border-[var(--market-control-border)] bg-[var(--market-input)] pl-8 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                   />
                   {filterText ? (
                     <button
                       type="button"
                       onClick={() => setFilterText('')}
                       aria-label="Clear item filter"
-                      className="absolute right-1.5 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-xs text-[#9baab0] hover:bg-[#26353c] hover:text-white"
+                      className="absolute right-1.5 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-xs text-[var(--market-muted)] hover:bg-[#26353c] hover:text-white"
                     >
                       X
                     </button>
@@ -1971,7 +1971,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                             setAscendancyFilter('All')
                           }
                         }}
-                        className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                        className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                       >
                         {forbiddenBaseClassOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                       </select>
@@ -1990,7 +1990,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                             setBaseClassFilter(FORBIDDEN_ASCENDANCY_BASE_CLASS[nextAscendancy] || 'All')
                           }
                         }}
-                        className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                        className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                       >
                         {forbiddenAscendancyOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                       </select>
@@ -2006,7 +2006,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={levelFilter}
                       onChange={(event) => setLevelFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {levelOptions.map(([level, count]) => (
@@ -2028,14 +2028,14 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     value={filterText}
                     onChange={(event) => setFilterText(event.target.value)}
                     placeholder="Filter items"
-                    className="h-8 w-48 border border-[#3b4951] bg-[#11191f] pl-8 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                    className="h-8 w-48 border border-[var(--market-control-border)] bg-[var(--market-input)] pl-8 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                   />
                   {filterText ? (
                     <button
                       type="button"
                       onClick={() => setFilterText('')}
                       aria-label="Clear item filter"
-                      className="absolute right-1.5 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-xs text-[#9baab0] hover:bg-[#26353c] hover:text-white"
+                      className="absolute right-1.5 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-xs text-[var(--market-muted)] hover:bg-[#26353c] hover:text-white"
                     >
                       ×
                     </button>
@@ -2049,7 +2049,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={influenceFilter}
                       onChange={(event) => setInfluenceFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       {influenceOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                     </select>
@@ -2064,7 +2064,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={tierFilter}
                       onChange={(event) => setTierFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {tierOptions.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -2082,7 +2082,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={levelFilter}
                       onChange={(event) => setLevelFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {levelOptions.map(([level, count]) => (
@@ -2102,7 +2102,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={tierFilter}
                       onChange={(event) => setTierFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {tierOptions.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -2118,7 +2118,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={influenceFilter}
                       onChange={(event) => setInfluenceFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       {influenceOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                     </select>
@@ -2133,7 +2133,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={levelFilter}
                       onChange={(event) => setLevelFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {levelOptions.map(([level, count]) => (
@@ -2152,7 +2152,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                   <select
                     value={valueDisplay}
                     onChange={(event) => setValueDisplay(event.target.value)}
-                    className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                    className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                   >
                     <option>Adaptive</option>
                     <option>Chaos</option>
@@ -2168,7 +2168,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={tierFilter}
                       onChange={(event) => setTierFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {tierOptions.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -2184,7 +2184,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={influenceFilter}
                       onChange={(event) => setInfluenceFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       {influenceOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                     </select>
@@ -2199,7 +2199,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                     <select
                       value={levelFilter}
                       onChange={(event) => setLevelFilter(event.target.value)}
-                      className="h-8 w-36 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                      className="h-8 w-36 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                     >
                       <option value="All">All</option>
                       {levelOptions.map(([level, count]) => (
@@ -2218,7 +2218,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                   <select
                     value={saleType}
                     onChange={(event) => setSaleType(event.target.value)}
-                    className="h-8 w-44 appearance-none border border-[#3b4951] bg-[#11191f] pl-2 pr-7 text-xs text-white outline-none focus:border-[#00b98d]"
+                    className="h-8 w-44 appearance-none border border-[var(--market-control-border)] bg-[var(--market-input)] pl-2 pr-7 text-xs text-white outline-none focus:border-[var(--market-accent)]"
                   >
                     <option value="available">Instant Buyout and In Person</option>
                     <option value="securable">Instant Buyout</option>
@@ -2235,7 +2235,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                 disabled={!league || loading || loadingLeagues}
                 aria-label="Refresh market prices"
                 title="Refresh prices"
-                className="grid h-8 w-8 place-items-center border border-[#3b4951] bg-[#11191f] text-[#aebbc0] hover:border-[#00b98d] hover:text-white disabled:opacity-50"
+                className="grid h-8 w-8 place-items-center border border-[var(--market-control-border)] bg-[var(--market-input)] text-[#aebbc0] hover:border-[var(--market-accent)] hover:text-white disabled:opacity-50"
               >
                 <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
               </button>
@@ -2248,7 +2248,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
             </div>
           ) : null}
           {loading ? (
-            <div role="status" className="mx-4 mb-4 border border-[#354149] bg-[#141e24] px-3 py-6 text-sm text-[#9baab0]">
+            <div role="status" className="mx-4 mb-4 border border-[#354149] bg-[var(--market-panel)] px-3 py-6 text-sm text-[var(--market-muted)]">
               Loading {category?.label || 'market'} prices for {league || 'league'}…
             </div>
           ) : null}
@@ -2256,7 +2256,7 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
           {!loading && !error && market?.categoryId === category?.id && market?.league === league ? (
             <>
               {currencyIconError ? (
-                <p role="status" className="mx-4 mb-2 text-xs text-[#9baab0]">
+                <p role="status" className="mx-4 mb-2 text-xs text-[var(--market-muted)]">
                   Additional icon mapping is unavailable; using item icons or initials where possible.
                 </p>
               ) : null}
@@ -2354,14 +2354,14 @@ export default function MarketView({ query, selectedLeague, onLeagueChange, onNa
                   <button
                     type="button"
                     onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-                    className="border border-[#3b4951] bg-[#202c32] px-4 py-2 text-xs text-[#d3dcde] hover:border-[#00b98d]"
+                    className="border border-[var(--market-control-border)] bg-[#202c32] px-4 py-2 text-xs text-[#d3dcde] hover:border-[var(--market-accent)]"
                   >
                     Show more
                   </button>
                 </div>
               ) : null}
               {rows.length === 0 ? (
-                <p className="mx-4 mb-4 border border-[#354149] px-4 py-6 text-sm text-[#9baab0]">
+                <p className="mx-4 mb-4 border border-[#354149] px-4 py-6 text-sm text-[var(--market-muted)]">
                   {filterText || query
                     ? 'No items match this filter.'
                     : `poe.ninja returned no listings for ${category?.label || 'this category'} in ${(market?.fallbackTriedLeagues || [league]).join(' or ')}.`}

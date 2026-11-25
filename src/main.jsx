@@ -8,6 +8,7 @@ import '@fontsource/outfit/600.css'
 import App from './App.jsx'
 import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import './index.css'
+import './components/build.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
