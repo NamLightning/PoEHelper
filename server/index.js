@@ -7,11 +7,17 @@ import {
 } from './poeNinja.js'
 import {
   getAccountCharacterItems,
+  getAccountCharacterBuild,
   getAccountCharacters,
   getAccountConfigStatus,
   saveAccountConfig,
 } from './poeAccount.js'
 import { readStashFileCache, syncPoeStash, writeStashFileCache } from './poeStash.js'
+import { fetchPobbinBuild, fetchTree } from './buildData.js'
+import { resolveWikiIcons } from '../shared/buildIconLookup.js'
+import { resolveTreeIcons, fetchTreeIcon } from './buildTreeIcons.js'
+import { poeFetch, poeHeaders } from './poeRequest.js'
+import { isCharacterRefresh } from './poeCharacterCache.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3001
@@ -21,9 +27,11 @@ app.use(express.json({ limit: '2mb' }))
 
 function sendAccountError(response, error) {
   const status = Number.isInteger(error?.status) ? error.status : 500
+  if (status === 429) response.set('Retry-After', String(error.retryAfter || 60))
   response.status(status).json({
     error: error instanceof Error ? error.message : 'Account request failed.',
     code: error?.code || 'ACCOUNT_REQUEST_FAILED',
+    ...(status === 429 ? { retryAfter: error.retryAfter || 60, retryAt: error.retryAt, accountState: error.accountState || '' } : {}),
   })
 }
 
@@ -31,14 +39,82 @@ app.get('/api/health', (_request, response) => {
   response.json({ status: 'ok' })
 })
 
+app.get('/api/build/character', async (request, response) => {
+  try { response.set('Cache-Control', 'no-store'); response.json(await getAccountCharacterBuild(request.query.character, { force: isCharacterRefresh(request.query.refresh) })) }
+  catch (error) { sendAccountError(response, error) }
+})
+
+app.get('/api/build/pobbin', async (request, response) => {
+  response.set('Cache-Control', 'no-store, max-age=0')
+  try { response.json(await fetchPobbinBuild(request.query.url)) }
+  catch (error) { response.status(400).json({ error: error.message }) }
+})
+
+app.post('/api/build/icons', async (request, response) => {
+  const names = request.body?.names
+  if (!Array.isArray(names) || names.length > 160 || !names.every((name) => typeof name === 'string' && name.length > 0 && name.length <= 160)) {
+    return response.status(400).json({ error: 'Invalid icon names.' })
+  }
+  const controller = new AbortController()
+  const cancel = () => { if (!response.writableEnded) controller.abort() }
+  response.once('close', cancel)
+  const timeout = setTimeout(() => controller.abort(), 15000)
+  try { response.json({ icons: await resolveWikiIcons(names, { signal: controller.signal }) }) }
+  catch { if (!response.destroyed) response.status(502).json({ error: 'Icon service unavailable.' }) }
+  finally { clearTimeout(timeout); response.off('close', cancel) }
+})
+
+app.post('/api/build/tree-nodes', async (request, response) => {
+  const { ids, version, masteries, clusterJewels = [], layout = false, jewelData = {} } = request.body || {}
+  if (!Array.isArray(ids) || ids.length > 2500 || !ids.every((id) => /^\d+$/.test(String(id)))) {
+    return response.status(400).json({ error: 'Invalid allocated node IDs.' })
+  }
+  if (!Array.isArray(clusterJewels) || clusterJewels.length > 100 || !clusterJewels.every((jewel) => jewel && (/^\d+$/.test(String(jewel.nodeId)) || Number.isInteger(jewel.socketIndex) && jewel.socketIndex >= 0 && jewel.socketIndex < 2500) && typeof jewel.baseType === 'string' && jewel.baseType.length <= 100 && Array.isArray(jewel.mods) && jewel.mods.length <= 200 && jewel.mods.every((line) => typeof line === 'string' && line.length <= 2000))) {
+    return response.status(400).json({ error: 'Invalid cluster jewels.' })
+  }
+  if (typeof layout !== 'boolean' || !jewelData || typeof jewelData !== 'object' || JSON.stringify(jewelData).length > 512 * 1024) return response.status(400).json({ error: 'Invalid expansion graph.' })
+  try { response.json(await fetchTree(version, ids, masteries, clusterJewels, { layout, jewelData })) }
+  catch (error) { response.status(502).json({ error: error.message }) }
+})
+
+app.get('/api/build/tree', async (request, response) => {
+  try { response.json(await fetchTree(request.query.version)) }
+  catch (error) { response.status(502).json({ error: error.message }) }
+})
+
+app.post('/api/build/tree-icons', async (request, response) => {
+  const nodes = request.body?.nodes
+  if (!Array.isArray(nodes) || nodes.length > 35 || !nodes.every(node => node && /^\d+$/.test(String(node.id)) && typeof node.name === 'string' && node.name.length > 0 && node.name.length <= 150 && (!node.iconKey || typeof node.iconKey === 'string' && node.iconKey.length < 300))) return response.status(400).json({ error: 'Invalid passive icon selection.' })
+  const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 12000)
+  const cancel = () => { if (!response.writableEnded) controller.abort() }
+  response.on('close', cancel)
+  try {
+    const icons = await resolveTreeIcons(nodes, controller.signal)
+    response.json({ icons: Object.fromEntries(Object.entries(icons).map(([id, url]) => [id, `/api/build/tree-icon?url=${encodeURIComponent(url)}`])) })
+  }
+  catch { if (!response.destroyed) response.status(502).json({ error: 'Passive icon service unavailable.' }) }
+  finally { clearTimeout(timeout); response.off('close', cancel) }
+})
+
+app.get('/api/build/tree-icon', async (request, response) => {
+  const value = request.query.url
+  if (typeof value !== 'string' || value.length > 1500 || !/^https:\/\/www\.poewiki\.net\/images\/[\w%/().,-]+\.png$/.test(value)) return response.status(400).end()
+  const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 20000)
+  const cancel = () => { if (!response.writableEnded) controller.abort() }
+  response.on('close', cancel)
+  try {
+    const upstream = await fetchTreeIcon(value, controller.signal)
+    if (!upstream.ok || !upstream.headers.get('content-type')?.startsWith('image/png') || Number(upstream.headers.get('content-length')) > 256 * 1024) return response.status(502).end()
+    const bytes = Buffer.from(await upstream.arrayBuffer())
+    if (bytes.length > 256 * 1024) return response.status(502).end()
+    response.set({ 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400', 'X-Content-Type-Options': 'nosniff' }).send(bytes)
+  } catch { if (!response.destroyed) response.status(502).end() }
+  finally { clearTimeout(timeout); response.off('close', cancel) }
+})
+
 app.get('/api/trade/stats', async (_request, response) => {
   try {
-    const upstream = await fetch('https://www.pathofexile.com/api/trade/data/stats', {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'PoEHelper/0.1.0 local market client',
-      },
-    })
+    const upstream = await poeFetch('https://www.pathofexile.com/api/trade/data/stats', { headers: poeHeaders() })
     if (!upstream.ok) {
       throw new Error(`Path of Exile Trade returned HTTP ${upstream.status}.`)
     }
@@ -71,6 +147,7 @@ app.get('/api/trade/stats', async (_request, response) => {
       })),
     })
   } catch (error) {
+    if (error?.status === 429) return sendAccountError(response, error)
     console.error('PoE Trade stats request failed:', error)
     response.status(502).json({
       error: 'Could not load explicit stat filters from Path of Exile Trade.',
@@ -98,9 +175,9 @@ app.post('/api/account/config', async (request, response) => {
   }
 })
 
-app.get('/api/account/characters', async (_request, response) => {
+app.get('/api/account/characters', async (request, response) => {
   try {
-    response.json(await getAccountCharacters())
+    response.json(await getAccountCharacters({ force: isCharacterRefresh(request.query.refresh) }))
   } catch (error) {
     if (error?.status >= 500) console.error('Loading PoE account characters failed:', error)
     sendAccountError(response, error)
@@ -109,7 +186,7 @@ app.get('/api/account/characters', async (_request, response) => {
 
 app.get('/api/account/character-items', async (request, response) => {
   try {
-    response.json(await getAccountCharacterItems(request.query.character))
+    response.json(await getAccountCharacterItems(request.query.character, { force: isCharacterRefresh(request.query.refresh) }))
   } catch (error) {
     if (error?.status >= 500) console.error('Loading PoE character items failed:', error)
     sendAccountError(response, error)
@@ -122,6 +199,7 @@ async function syncStashHandler(request, response) {
   try {
     response.json(await syncPoeStash(league))
   } catch (error) {
+    if (error?.status === 429) return sendAccountError(response, error)
     console.error('Direct PoE stash sync failed:', error)
     const status = Number.isInteger(error?.status) && error.status >= 400 && error.status <= 599
       ? error.status

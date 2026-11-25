@@ -16,6 +16,8 @@ import { LineChart, Line, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { readStashCache, writeStashCache } from '../services/stashService'
 import { MARKET_CATEGORIES } from '../data/marketCategories'
 import { MARKET_CATEGORY_ICONS } from '../data/marketCategoryIcons'
+import { recordPoeCooldown, currentPoeDeadline } from '../lib/poeCooldown.js'
+import usePoeCooldown from '../lib/usePoeCooldown.js'
 
 const STASH_TABS = [
   { id: 'tab-1', label: '1', kind: 'premium' },
@@ -708,6 +710,7 @@ export default function StashView({
   const [localStashTabs, setLocalStashTabs] = useState(() => readStashCache().tabs || STASH_TABS)
   const [localStashItems, setLocalStashItems] = useState(() => readStashCache().pricedItems || STASH_ITEMS)
   const [syncing, setSyncing] = useState(false)
+  const retrySeconds = usePoeCooldown()
   const [syncProgress, setSyncProgress] = useState('')
   const [syncedTabIndices, setSyncedTabIndices] = useState(() => {
     try { return JSON.parse(localStorage.getItem('poe.syncedTabIndices') || '[]') } catch { return [] }
@@ -1040,7 +1043,7 @@ export default function StashView({
   }
 
   async function syncNow() {
-    if (syncing) return
+    if (syncing || currentPoeDeadline() > Date.now()) return
     if (!accountName) { setNotice('Set an account name before syncing stash.'); return }
     setSyncing(true)
     setNotice('')
@@ -1052,6 +1055,7 @@ export default function StashView({
       try { synced = rawResponse ? JSON.parse(rawResponse) : {} } catch {
         throw new Error(`Backend trả về HTTP ${response.status} nhưng không phải JSON: ${rawResponse.slice(0, 300)}`)
       }
+      recordPoeCooldown(response, synced)
       if (!response.ok || synced.error) {
         const detail = synced.error?.message || synced.error || synced.details || `Backend trả về HTTP ${response.status}.`
         throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail))
@@ -1368,11 +1372,11 @@ export default function StashView({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="hidden text-[15.5px] text-[#939393] sm:inline">{syncing ? syncProgress : `Synced ${syncedLabel}`}</span>
+              <span className="hidden text-[15.5px] text-[#939393] sm:inline">{retrySeconds > 0 ? `GGG API: thử lại sau ${retrySeconds}s` : syncing ? syncProgress : `Synced ${syncedLabel}`}</span>
               <button
                 type="button"
                 onClick={syncNow}
-                disabled={syncing}
+                disabled={syncing || retrySeconds > 0}
                 aria-label="Refresh stash"
                 title="Refresh stash"
                 className="grid h-9 w-9 place-items-center border border-[#26383b] bg-[#131d1f] text-[#a9c0c3] hover:border-[#2dd4bf] hover:bg-[#203034] hover:text-white"

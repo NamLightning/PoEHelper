@@ -2,11 +2,10 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { getMarketSummary } from './poeNinja.js'
-import { getStashCredentials } from './poeAccount.js'
+import { getStashCredentials, getAccountCharacters } from './poeAccount.js'
+import { poeHeaders as accountHeaders, logPoeForbidden, poeFetch } from './poeRequest.js'
 
 const STASH_URL = 'https://www.pathofexile.com/character-window/get-stash-items'
-const CHARACTERS_URL = 'https://www.pathofexile.com/character-window/get-characters'
-const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const DATA_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'data')
 const STASH_CACHE_FILE = path.join(DATA_DIR, 'stash-cache.json')
@@ -40,8 +39,7 @@ function clean(value) {
 
 function poeHeaders(poesessid) {
   return {
-    Cookie: `POESESSID=${clean(poesessid)}`,
-    'User-Agent': USER_AGENT,
+    ...accountHeaders(poesessid),
     Accept: 'application/json, text/javascript, */*; q=0.01',
     'Accept-Language': 'en-US,en;q=0.9',
     Origin: 'https://www.pathofexile.com',
@@ -58,17 +56,19 @@ async function fetchStashTab(accountName, sessionId, league, tabIndex) {
     tabs: '1',
     tabIndex: String(tabIndex),
   })
-  const response = await fetch(`${STASH_URL}?${query}`, {
+  const response = await poeFetch(`${STASH_URL}?${query}`, {
     headers: poeHeaders(sessionId),
   })
   const raw = await response.text()
   console.log('[poe-stash] get-stash-items URL:', `${STASH_URL}?${query}`)
   let payload
   try { payload = JSON.parse(raw) } catch {
+    logPoeForbidden(`${STASH_URL}?${query}`, response.status)
     const error = new Error(`GGG stash API returned invalid JSON (HTTP ${response.status}): ${raw.slice(0, 300)}`)
     error.status = response.status
     throw error
   }
+  logPoeForbidden(`${STASH_URL}?${query}`, response.status, payload)
   if (!response.ok || payload?.error) {
     const detail = payload?.error?.message || payload?.error || raw.slice(0, 300)
     const error = new Error(`GGG get-stash-items failed (HTTP ${response.status}, code ${payload?.error?.code ?? 'unknown'}): ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`)
@@ -93,7 +93,8 @@ async function fetchStashTabWithAccountFallback(rawAccountName, cleanAccountName
         return payload
       } catch (error) {
         lastError = error
-        const retryable = error?.status === 429 || error?.status === 403 || error?.code === 6
+        if (error?.status === 429) throw error
+        const retryable = error?.status === 403 || error?.code === 6
         console.warn('[poe-stash] get-stash-items failed for accountName:', candidate, 'tabIndex:', tabIndex, error.message)
         if (!retryable) throw error
         if (attempt === 0) await wait(1500)
@@ -104,27 +105,12 @@ async function fetchStashTabWithAccountFallback(rawAccountName, cleanAccountName
   throw lastError || new Error('GGG get-stash-items failed for all account name candidates.')
 }
 
-async function verifySession(rawAccountName, sessionId) {
-  const query = new URLSearchParams({ accountName: rawAccountName })
-  const url = `${CHARACTERS_URL}?${query}`
-  const response = await fetch(url, {
-    headers: poeHeaders(sessionId),
-  })
-  const raw = await response.text()
-  let payload
-  try { payload = JSON.parse(raw) } catch { payload = null }
-  if (response.status === 401 || response.status === 403 || !Array.isArray(payload) || payload.length === 0) {
-    const error = new Error('POESESSID đã hết hạn, vui lòng copy lại cookie mới từ pathofexile.com')
-    error.status = response.status === 401 || response.status === 403 ? response.status : 403
-    error.code = 'SESSION_INVALID'
-    console.error('[poe-stash] get-characters failed:', response.status, raw.slice(0, 300))
-    throw error
-  }
-  const characters = payload.filter((character) => typeof character?.league === 'string' && character.league.trim())
+async function verifySession() {
+  const characters = (await getAccountCharacters()).filter(character => character.league?.trim())
   if (!characters.length) {
-    const error = new Error('POESESSID đã hết hạn, vui lòng copy lại cookie mới từ pathofexile.com')
-    error.status = 403
-    error.code = 'SESSION_INVALID'
+    const error = new Error('GGG returned no characters with a league for stash sync.')
+    error.status = 404
+    error.code = 'CHARACTER_NOT_FOUND'
     throw error
   }
   return characters
@@ -350,7 +336,7 @@ export function aggregateStashItems(items, divineRate) {
 
 export async function syncPoeStash(league) {
   const { accountName, rawAccountName, sessionId } = await getStashCredentials()
-  const characters = await verifySession(rawAccountName, sessionId)
+  const characters = await verifySession()
   const availableLeagues = new Set(
     characters.map((character) => clean(character.league)).filter(Boolean),
   )

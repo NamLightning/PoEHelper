@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import Topbar from './components/Topbar'
 import WealthChartCard from './components/WealthChartCard'
 import GoalCard from './components/GoalCard'
 import MethodGrid from './components/MethodGrid'
 import AccountSettingsModal from './components/AccountSettingsModal'
-import { BuildView, MarketView, StashView } from './components/SectionViews'
+import { MarketView, StashView } from './components/SectionViews'
 import { CONTEXTS, createSnapshot, refreshSnapshot, totalOf } from './data/mock'
 import { readStashCache, writeStashCache } from './services/stashService'
+
+const BuildView = lazy(() => import('./components/BuildView'))
 
 function cacheTimestamp(value) {
   const numeric = Number(value)
@@ -240,7 +242,7 @@ export default function App() {
               />
             </div>
           ) : null}
-          {nav === 'build' ? <BuildView query={query} /> : null}
+          {nav === 'build' ? <Suspense fallback={<p className="text-sm text-[var(--muted)]" role="status">Đang tải Build…</p>}><BuildView selectedCharacter={selectedCharacter} onOpenAccount={() => setAccountSettingsOpen(true)} /></Suspense> : null}
         </main>
       <AccountSettingsModal
         open={accountSettingsOpen}

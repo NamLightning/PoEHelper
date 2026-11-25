@@ -2,11 +2,14 @@ import { randomUUID } from 'node:crypto'
 import { chmod, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { configuredSessionId, poeHeaders, logPoeForbidden, poeFetch } from './poeRequest.js'
+import { createCharacterCache, characterCacheKey } from './poeCharacterCache.js'
 
-const CONFIG_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../config.local.json')
+const characterCache = createCharacterCache()
+
+const CONFIG_PATH = process.env.POESTASH_CONFIG_PATH || path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../config.local.json')
 const CHARACTERS_URL = 'https://www.pathofexile.com/character-window/get-characters'
 const CHARACTER_ITEMS_URL = 'https://www.pathofexile.com/character-window/get-items'
-const USER_AGENT = 'PoEHelper/0.1.0 (local Path of Exile account integration)'
 
 export class AccountApiError extends Error {
   constructor(status, code, message) {
@@ -34,12 +37,12 @@ async function readLocalConfig() {
 async function readAccountCredentials() {
   const localConfig = await readLocalConfig()
   const accountName = process.env.POE_ACCOUNT_NAME || localConfig.POE_ACCOUNT_NAME || localConfig.accountName || ''
-  const sessionId = process.env.POESESSID || localConfig.POESESSID || localConfig.poesessid || localConfig.poeSessId || ''
+  const sessionId = configuredSessionId(localConfig, process.env)
 
   return {
     accountName: typeof accountName === 'string' ? accountName.trim() : '',
     sessionId: typeof sessionId === 'string' ? sessionId.trim() : '',
-    source: process.env.POE_ACCOUNT_NAME || process.env.POESESSID ? 'environment' : 'local',
+    source: process.env.POE_ACCOUNT_NAME || (!Object.hasOwn(localConfig, 'POESESSID') && process.env.POESESSID) ? 'environment' : 'local',
   }
 }
 
@@ -53,20 +56,21 @@ function isValidSessionId(sessionId) {
     && !/[\u0000-\u0020\u007f;]/.test(sessionId)
 }
 
-async function requireAccountCredentials() {
+async function requireAccountCredentials({ requireSession = false } = {}) {
   const credentials = await readAccountCredentials()
-  if (!isValidAccountName(credentials.accountName) || !isValidSessionId(credentials.sessionId)) {
+  if (!isValidAccountName(credentials.accountName) || (credentials.sessionId && !isValidSessionId(credentials.sessionId))) {
     throw new AccountApiError(
       400,
       'ACCOUNT_NOT_CONFIGURED',
-      'Configure a valid POE_ACCOUNT_NAME and POESESSID first.',
+      'Configure a valid Account Name#Tag and an optional valid POESESSID first.',
     )
   }
+  if (requireSession && !credentials.sessionId) throw new AccountApiError(400, 'STASH_SESSION_REQUIRED', 'Stash sync requires POESESSID. Public mode supports character profiles.')
   return credentials
 }
 
 export async function getStashCredentials() {
-  const credentials = await requireAccountCredentials()
+  const credentials = await requireAccountCredentials({ requireSession: true })
   return {
     accountName: credentials.accountName.split('#')[0].trim(),
     rawAccountName: credentials.accountName,
@@ -80,7 +84,8 @@ export async function getAccountConfigStatus() {
   const cookieConfigured = isValidSessionId(sessionId)
 
   return {
-    configured: accountNameConfigured && cookieConfigured,
+    configured: accountNameConfigured && (!sessionId || cookieConfigured),
+    mode: cookieConfigured ? 'authenticated' : 'public',
     accountName: accountName || '',
     accountNameConfigured,
     cookieConfigured,
@@ -101,17 +106,18 @@ export async function saveAccountConfig({ accountName, poeSessId }) {
   }
 
   const current = await readAccountCredentials()
-  const sessionId = typeof poeSessId === 'string' && poeSessId.trim()
-    ? poeSessId.trim()
-    : current.sessionId
-  if (!isValidSessionId(sessionId)) {
+  const sessionId = typeof poeSessId === 'string' ? poeSessId.trim().replace(/^POESESSID=/i, '').trim() : current.sessionId
+  if (sessionId && !isValidSessionId(sessionId)) {
     throw new AccountApiError(400, 'INVALID_SESSION_ID', 'Enter a valid POESESSID.')
   }
 
   const config = {
+    ...await readLocalConfig(),
     POE_ACCOUNT_NAME: accountName.trim(),
     POESESSID: sessionId,
   }
+  delete config.poesessid
+  delete config.poeSessId
   const temporaryPath = `${CONFIG_PATH}.${randomUUID()}.tmp`
 
   try {
@@ -127,6 +133,7 @@ export async function saveAccountConfig({ accountName, poeSessId }) {
     throw error
   }
 
+  characterCache.clear()
   return getAccountConfigStatus()
 }
 
@@ -139,18 +146,19 @@ function getCredentialsError(error) {
   )
 }
 
-async function fetchPoeJson(url, sessionId, { notFoundCode, notFoundMessage }) {
+function fetchPoeJson(url, sessionId, options) {
+  return characterCache.get(characterCacheKey(url, sessionId), () => requestPoeJson(url, sessionId, options), options)
+}
+
+async function requestPoeJson(url, sessionId, { notFoundCode, notFoundMessage }) {
   let response
   try {
-    response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-        Cookie: `POESESSID=${sessionId}`,
-        'User-Agent': USER_AGENT,
-      },
+    response = await poeFetch(url, {
+      headers: poeHeaders(sessionId),
       signal: AbortSignal.timeout(15_000),
     })
   } catch (error) {
+    if (error?.status === 429) throw error
     throw new AccountApiError(
       502,
       'POE_UNAVAILABLE',
@@ -158,11 +166,14 @@ async function fetchPoeJson(url, sessionId, { notFoundCode, notFoundMessage }) {
     )
   }
 
-  if (response.status === 401 || response.status === 403) {
+  let data, validJson = true
+  try { data = await response.json() } catch { validJson = false }
+  logPoeForbidden(url, response.status, data)
+  if (response.status === 401 || response.status === 403 || Number(data?.error?.code) === 6) {
     throw new AccountApiError(
-      response.status,
-      'SESSION_INVALID',
-      'POESESSID is expired or invalid. Update the cookie and try again.',
+      response.status === 401 ? 401 : 403,
+      sessionId ? 'SESSION_INVALID' : 'PROFILE_FORBIDDEN',
+      sessionId ? 'POESESSID is expired or invalid. Update the cookie and try again.' : 'GGG refused the public profile. Check that the profile is public or provide POESESSID.',
     )
   }
   if (response.status === 404) {
@@ -176,22 +187,25 @@ async function fetchPoeJson(url, sessionId, { notFoundCode, notFoundMessage }) {
     )
   }
 
-  try {
-    return await response.json()
-  } catch {
+  if (!validJson) {
     throw new AccountApiError(
       502,
       'POE_INVALID_RESPONSE',
       'pathofexile.com did not return valid JSON. Check the cookie and try again.',
     )
   }
+  const endpoint = new URL(url).pathname
+  const valid = endpoint.endsWith('/get-characters') ? Array.isArray(data)
+    : endpoint.endsWith('/get-items') ? Array.isArray(data?.items) : Array.isArray(data?.hashes)
+  if (!valid) throw new AccountApiError(502, 'POE_INVALID_RESPONSE', 'GGG returned invalid character data.')
+  return data
 }
 
 function encodeAccountName(accountName) {
   return encodeURIComponent(accountName)
 }
 
-export async function getAccountCharacters() {
+export async function getAccountCharacters(options = {}) {
   let credentials
   try {
     credentials = await requireAccountCredentials()
@@ -200,11 +214,12 @@ export async function getAccountCharacters() {
   }
 
   const data = await fetchPoeJson(
-    `${CHARACTERS_URL}?accountName=${encodeAccountName(credentials.accountName)}`,
+    `${CHARACTERS_URL}?accountName=${encodeAccountName(credentials.accountName)}&realm=pc`,
     credentials.sessionId,
     {
       notFoundCode: 'ACCOUNT_NOT_FOUND',
       notFoundMessage: 'Account not found. Check the account name and tag.',
+      force: options.force === true,
     },
   )
   if (!Array.isArray(data)) {
@@ -225,7 +240,7 @@ export async function getAccountCharacters() {
     }))
 }
 
-export async function getAccountCharacterItems(characterName) {
+export async function getAccountCharacterItems(characterName, options = {}) {
   let credentials
   try {
     credentials = await requireAccountCredentials()
@@ -248,6 +263,7 @@ export async function getAccountCharacterItems(characterName) {
 
   const url = `${CHARACTER_ITEMS_URL}?accountName=${encodeAccountName(credentials.accountName)}&character=${encodeURIComponent(characterName)}`
   const data = await fetchPoeJson(url, credentials.sessionId, {
+    force: options.force === true,
     notFoundCode: 'CHARACTER_NOT_FOUND',
     notFoundMessage: 'Character was not found on this account.',
   })
@@ -260,4 +276,20 @@ export async function getAccountCharacterItems(characterName) {
   }
 
   return data
+}
+
+export async function getAccountCharacterBuild(characterName, options = {}) {
+  // The items request validates both the character name and account ownership.
+  const items = await getAccountCharacterItems(characterName, options)
+  const credentials = await requireAccountCredentials()
+  const url = `https://www.pathofexile.com/character-window/get-passive-skills?accountName=${encodeAccountName(credentials.accountName)}&character=${encodeURIComponent(characterName)}`
+  const passives = await fetchPoeJson(url, credentials.sessionId, {
+    force: options.force === true,
+    notFoundCode: 'CHARACTER_NOT_FOUND',
+    notFoundMessage: 'Character was not found on this account.',
+  })
+  if (!Array.isArray(passives?.hashes)) {
+    throw new AccountApiError(502, 'POE_INVALID_RESPONSE', 'GGG returned an invalid passive tree.')
+  }
+  return { ...items, passives }
 }
