@@ -1,18 +1,26 @@
-import { useEffect, useState } from 'react'
-import Sidebar from './components/Sidebar'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import Topbar from './components/Topbar'
 import WealthChartCard from './components/WealthChartCard'
 import GoalCard from './components/GoalCard'
 import MethodGrid from './components/MethodGrid'
 import AccountSettingsModal from './components/AccountSettingsModal'
-import { BuildView, CraftView, MarketView, StashView, ToolsView } from './components/SectionViews'
+import { MarketView, StashView } from './components/SectionViews'
 import { CONTEXTS, createSnapshot, refreshSnapshot, totalOf } from './data/mock'
+import { readStashCache, writeStashCache } from './services/stashService'
+
+const BuildView = lazy(() => import('./components/BuildView'))
+
+function cacheTimestamp(value) {
+  const numeric = Number(value)
+  if (Number.isFinite(numeric) && numeric > 0) return numeric
+  const parsed = Date.parse(String(value || ''))
+  return Number.isFinite(parsed) ? parsed : 0
+}
 
 export default function App() {
   const [nav, setNav] = useState('home')
   const [query, setQuery] = useState('')
   const [contextId, setContextId] = useState('covens')
-  const [theme, setTheme] = useState('night')
   const [goalTab, setGoalTab] = useState('goal')
   const [syncedAt, setSyncedAt] = useState(() => Date.now() - 12 * 60 * 1000)
   const [now, setNow] = useState(() => Date.now())
@@ -24,8 +32,18 @@ export default function App() {
   const [accountName, setAccountName] = useState('')
   const [selectedCharacter, setSelectedCharacter] = useState(null)
   const [selectedLeague, setSelectedLeague] = useState('')
+  const [stashItems, setStashItems] = useState(() => readStashCache().pricedItems || [])
+  const [stashTabs, setStashTabs] = useState(() => readStashCache().tabs || [])
+  const [selectedTabs, setSelectedTabs] = useState(() => readStashCache().selectedTabs || [])
+  const [lastStashSyncedAt, setLastStashSyncedAt] = useState(() => {
+    const cache = readStashCache()
+    return cacheTimestamp(cache.lastSyncedAt || cache.syncedAt)
+  })
+  const [stashSyncStatusText, setStashSyncStatusText] = useState(() => readStashCache().syncStatusText || '')
 
   const context = CONTEXTS.find((item) => item.id === contextId) ?? CONTEXTS[2]
+  const activeLeague = selectedCharacter?.league || selectedLeague || marketRate?.league || 'Standard'
+  const stashAccountName = String(accountName || '').split('#')[0].trim()
   const total = totalOf(snapshot) * context.factor
   const sessionGain = snapshot.sessionGain * context.factor
   const perHour = sessionGain / (snapshot.sessionMs / 3_600_000)
@@ -35,8 +53,38 @@ export default function App() {
   }))
 
   useEffect(() => {
-    document.documentElement.dataset.tone = theme
-  }, [theme])
+    writeStashCache({
+      ...readStashCache(),
+      pricedItems: stashItems,
+      tabs: stashTabs,
+      selectedTabs,
+      syncedAt: lastStashSyncedAt,
+      syncStatusText: stashSyncStatusText,
+    })
+  }, [lastStashSyncedAt, selectedTabs, stashItems, stashSyncStatusText, stashTabs])
+
+  useEffect(() => {
+    if (stashItems.length > 0 || stashTabs.length > 0) return undefined
+    let active = true
+    fetch('/api/stash/cache')
+      .then(async (response) => {
+        const cache = await response.json()
+        if (!response.ok) throw new Error(cache.error || `Stash cache returned HTTP ${response.status}.`)
+        return cache
+      })
+      .then((cache) => {
+        if (!active) return
+        if (Array.isArray(cache.items)) setStashItems(cache.items)
+        if (Array.isArray(cache.tabs)) setStashTabs(cache.tabs)
+        if (Array.isArray(cache.selectedTabs)) setSelectedTabs(cache.selectedTabs)
+        if (cache.lastSyncedAt) setLastStashSyncedAt(cacheTimestamp(cache.lastSyncedAt))
+        if (cache.syncStatusText) setStashSyncStatusText(cache.syncStatusText)
+      })
+      .catch((error) => {
+        if (active) console.warn('Could not restore the persisted stash cache:', error)
+      })
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 15000)
@@ -117,26 +165,17 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <Sidebar
-        active={nav}
-        onChange={setNav}
-        onOpenSettings={() => setAccountSettingsOpen(true)}
-      />
-      <div className="flex min-w-0 flex-1 flex-col">
+    <div className="relative min-h-screen bg-transparent text-[var(--text)]">
         <Topbar
+          active={nav}
           contextId={contextId}
           onContext={setContextId}
-          query={query}
-          onQuery={setQuery}
           onNavigate={setNav}
-          theme={theme}
-          onToggleTheme={() => setTheme((value) => (value === 'ember' ? 'night' : 'ember'))}
           accountName={accountName}
           selectedCharacter={selectedCharacter}
           onOpenAccount={() => setAccountSettingsOpen(true)}
         />
-        <main className="min-w-0 flex-1 px-6 pb-10 pt-6 lg:px-8">
+        <main className="mx-auto min-w-0 w-full max-w-[1600px] px-4 pb-10 pt-20 sm:px-6 lg:px-8">
           {nav === 'home' ? (
             <>
               <header className="mb-5">
@@ -174,34 +213,41 @@ export default function App() {
               </div>
             </>
           ) : null}
-          {nav === 'stash' ? <StashView query={query} factor={context.factor} /> : null}
-          {nav === 'market' ? (
-            <MarketView
+          {nav === 'stash' ? (
+            <StashView
               query={query}
-              selectedLeague={selectedLeague}
-              onLeagueChange={setSelectedLeague}
-              onNavigate={setNav}
+              league={activeLeague}
+              divineToChaos={marketRate?.divineToChaos}
+              accountName={stashAccountName}
+              stashItems={stashItems}
+              onStashItems={setStashItems}
+              stashTabs={stashTabs}
+              onStashTabs={setStashTabs}
+              selectedTabs={selectedTabs}
+              onSelectedTabs={setSelectedTabs}
+              lastSyncedAt={lastStashSyncedAt}
+              onLastSyncedAt={setLastStashSyncedAt}
+              syncStatusText={stashSyncStatusText}
+              onSyncStatusText={setStashSyncStatusText}
             />
           ) : null}
-          {nav === 'currency' ? (
-            <>
-              <header className="mb-5">
-                <h1 className="text-[28px] font-semibold tracking-tight">Make Currency</h1>
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  Strategies priced in {context.priceLabel}. Filter the grid or search from the top bar.
-                </p>
-              </header>
-              <MethodGrid query={query} factor={context.factor} />
-            </>
+          {nav === 'market' ? (
+            <div className="mx-auto w-full max-w-[1320px] px-4">
+              <MarketView
+                query={query}
+                selectedLeague={selectedLeague}
+                onLeagueChange={setSelectedLeague}
+                onClearQuery={() => setQuery('')}
+                onNavigate={setNav}
+              />
+            </div>
           ) : null}
-          {nav === 'tools' ? <ToolsView query={query} /> : null}
-          {nav === 'craft' ? <CraftView query={query} factor={context.factor} /> : null}
-          {nav === 'build' ? <BuildView query={query} /> : null}
+          {nav === 'build' ? <Suspense fallback={<p className="text-sm text-[var(--muted)]" role="status">Đang tải Build…</p>}><BuildView selectedCharacter={selectedCharacter} onOpenAccount={() => setAccountSettingsOpen(true)} /></Suspense> : null}
         </main>
-      </div>
       <AccountSettingsModal
         open={accountSettingsOpen}
         onClose={() => setAccountSettingsOpen(false)}
+        league={activeLeague}
         onAccountName={setAccountName}
         onAccountSaved={(name) => {
           if (accountName && accountName !== name) {

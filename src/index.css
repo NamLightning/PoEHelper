@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: dark;
-  --bg: #100e0c;
+  --bg: #0d2b36;
   --bg-raise: #161310;
   --panel: #1c1915;
   --nav: #2a241c;
@@ -43,7 +43,13 @@ body,
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: #080a0b;
+  /* Keep the image/overlay on body only so cards and navigation keep their own colors. */
+  background-image: linear-gradient(rgba(13, 28, 31, 0.25), rgba(8, 12, 13, 0.45)), url('/bg-waves.jpg');
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--text);
   font-family: Inter, 'Segoe UI', sans-serif;
   text-rendering: optimizeLegibility;
@@ -70,6 +76,11 @@ input {
 }
 
 @layer components {
+  main select {
+    background-color: rgba(30, 41, 54, 0.75);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
   .panel {
     border: 1px solid var(--line);
     background: var(--panel);
